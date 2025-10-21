@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
+
+.blueHeaderText {
+  font-weight: 600;
+  font-size: 30px;
+  color: #0067b8;
+}
+
+.whiteHeaderText {
+  font-weight: 600;
+  font-size: 30px;
+  color: white;
+}
