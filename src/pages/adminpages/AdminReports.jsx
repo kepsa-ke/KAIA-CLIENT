@@ -115,6 +115,7 @@ const ImpactReportsPage = () => {
 
     // Prepare data for Excel (flatten the nested "metrics" object)
     const formattedData = reports.map((r) => ({
+      Organization: r.organizationName || "",
       Year: r.year,
       Quarter: r.quarter,
       Aware: r.metrics.aware,
@@ -123,7 +124,6 @@ const ImpactReportsPage = () => {
       Certified: r.metrics.certified,
       Orgs_Reached: r.metrics.orgsReached,
       Reached_By_Leaders: r.metrics.reachedByLeaders,
-      Organization: r.organizationName || "",
       Contact_Email: r.createdBy,
       Created_At: new Date(r.createdAt).toLocaleDateString(),
     }));
@@ -229,21 +229,24 @@ const ImpactReportsPage = () => {
           <table className="w-full border border-gray-200">
             <thead className="bg-gray-100">
               <tr>
+                {user.isAdmin && <th className="p-3 text-left">Member</th>}
                 <th className="p-3 text-left">Year</th>
                 <th className="p-3 text-left">Quarter</th>
-                <th className="p-3 text-left">Aware</th>
+                <th className="p-3 text-left">Awareness</th>
                 <th className="p-3 text-left">Engaged</th>
                 <th className="p-3 text-left">Trained</th>
                 <th className="p-3 text-left">Certified</th>
-                <th className="p-3 text-left">Orgs</th>
-                <th className="p-3 text-left">Leaders</th>
-                {user.isAdmin && <th className="p-3 text-left">Member</th>}
+                <th className="p-3 text-left">Organizations Reached</th>
+                <th className="p-3 text-left">Reached by Leaders</th>
                 <th className="p-3 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {reports.map((r) => (
                 <tr key={r._id} className="border-t hover:bg-gray-50">
+                  {user.isAdmin && (
+                    <td className="p-3">{r.organizationName || "—"}</td>
+                  )}
                   <td className="p-3">{r.year}</td>
                   <td className="p-3">{r.quarter}</td>
                   <td className="p-3">{r.metrics.aware}</td>
@@ -252,9 +255,7 @@ const ImpactReportsPage = () => {
                   <td className="p-3">{r.metrics.certified}</td>
                   <td className="p-3">{r.metrics.orgsReached}</td>
                   <td className="p-3">{r.metrics.reachedByLeaders}</td>
-                  {user.isAdmin && (
-                    <td className="p-3">{r.organizationName || "—"}</td>
-                  )}
+
                   <td className="p-3 flex gap-4">
                     <button
                       onClick={() => handleEdit(r)}
