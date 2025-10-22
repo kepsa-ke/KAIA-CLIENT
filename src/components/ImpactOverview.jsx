@@ -150,23 +150,36 @@ const ImpactOverview = () => {
       </div> */}
 
       {/* Summary Cards */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
-        {Object.entries(aggregates).map(([key, value], i) => (
-          <motion.div
-            key={key}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="bg-white shadow-md rounded-xl p-4 text-center"
-          >
-            <p className="text-sm text-gray-500 capitalize">
-              {key.replace(/([A-Z])/g, " $1")}
-            </p>
-            <h2 className="text-2xl font-bold text-[#0067b8]">
-              {value.toLocaleString()}
-            </h2>
-          </motion.div>
-        ))}
+        {Object.entries(aggregates).map(([key, value], i) => {
+          // Define readable labels
+          const labels = {
+            aware: "Awareness",
+            engaged: "Engaged",
+            trained: "Trained",
+            certified: "Certified",
+            orgsReached: "Organizations Reached",
+            reachedByLeaders: "Reached by Leaders",
+          };
+
+          return (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white shadow-md rounded-xl p-4 text-center"
+            >
+              <p className="text-sm text-gray-500 capitalize">
+                {labels[key] || key}
+              </p>
+              <h2 className="text-2xl font-bold text-[#0067b8]">
+                {value.toLocaleString()}
+              </h2>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Charts */}

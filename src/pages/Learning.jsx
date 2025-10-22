@@ -7,8 +7,8 @@ const Learning = () => {
   return (
     <div>
       <Navbar />
-      <div className="px-[2em]  xl:px-[5em] mt-[5em] mb-5">
-        <div className="mt-[2em]">
+      <div className="px-[2em]  xl:px-[5em] mt-[6em] mb-5">
+        <div className="mt-[3em]">
           <h1 className="text-4xl font-bold mb-4">Learn</h1>
           <p className="text-gray-600 mb-8">
             Find skills that enhance your work at any level and in any

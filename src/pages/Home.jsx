@@ -19,6 +19,7 @@ const Home = () => {
       <Navbar />
       <Hero />
       <Mission />
+      <div className="my-[3em]" />
       <Pillars />
       <ImpactOverview />
       <ReqInfo />

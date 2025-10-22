@@ -9,9 +9,9 @@ const Pillars = () => {
   const [readMoreStakeholder, setReadMoreStakeholder] = useState(false);
 
   return (
-    <div className="px-[2em]  xl:px-[5em] mt-[2em]">
+    <div className="px-[2em]  xl:px-[5em] mt-[2em] bg-[#0067b8] text-white py-[3em]">
       <div className="">
-        <h2 className=" mb-[1.5em] text-center blueHeaderText">
+        <h2 className=" mb-[2em] text-center whiteHeaderText">
           Our Strategic Pillars
         </h2>
 
@@ -19,8 +19,8 @@ const Pillars = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {/* Skills & Capacity Building */}
           <div className="">
-            <div className="mb-3 flex justify-center">
-              <MdMenuBook className="text-5xl text-[#0067b8]" />
+            <div className="mb-10 flex justify-center">
+              <MdMenuBook className="text-5xl text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2 text-center">
               AI Education and Skills Development
@@ -51,8 +51,8 @@ const Pillars = () => {
           </div>
           {/* credentials */}
           <div className="">
-            <div className="mb-3 flex justify-center">
-              <LuBadge className="text-5xl text-[#0067b8]" />
+            <div className="mb-10 flex justify-center">
+              <LuBadge className="text-5xl text-white" />
             </div>
 
             <h3 className="text-xl font-semibold mb-2 text-center">
@@ -81,8 +81,8 @@ const Pillars = () => {
           </div>
           {/* stakeholder collaboration */}
           <div className="">
-            <div className="mb-3 flex justify-center">
-              <RiNumbersLine className="text-5xl text-[#0067b8]" />
+            <div className="mb-10 flex justify-center">
+              <RiNumbersLine className="text-5xl text-white" />
             </div>
 
             <h3 className="text-xl font-semibold mb-2 text-center">
@@ -91,7 +91,7 @@ const Pillars = () => {
             <h3 className="mb-2 text-center">
               Unite fragmented efforts to advocate for inclusive AI development{" "}
               <span
-                className="text-blue-600 cursor-pointer "
+                className="text-white cursor-pointer "
                 onClick={() => setReadMoreStakeholder(!readMoreStakeholder)}
               >
                 {readMoreStakeholder ? "Hide" : "More..."}

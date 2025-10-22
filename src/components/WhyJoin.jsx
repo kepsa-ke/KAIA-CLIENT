@@ -21,19 +21,16 @@ const WhyJoin = () => {
           </p>
         </div>
         <div>
-          <h2 className="mb-4 font-semibold">Quality content with Microsoft</h2>
+          <h2 className="mb-4 font-semibold">Quality content</h2>
           <p>
             Training materials developed with qualified and recognized partners.
           </p>
         </div>
         <div>
           <h2 className="mb-4 font-semibold">
-            A national network for digitalization
+            A national network for collaboration
           </h2>
-          <p>
-            Institutions, associations, and businesses collaborate to strengthen
-            the country's skills.
-          </p>
+          <p>Engage in championing AI Skilling Initiatives through advocacy</p>
         </div>
       </div>
     </div>

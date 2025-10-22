@@ -19,7 +19,7 @@ const TrainingContent = () => {
       id: 2,
       icon: <TbAlignRight2 size={24} className="text-[#0067b8]" />,
       title: "Ethics, safety and regulations",
-      desc: "Risks, opportunities, and rules for the responsible and ethical use of AI: from the AI ​​Act to the GDPR, to ensure trust and competitiveness.",
+      desc: "Risks, opportunities and rules for the responsible and ethical use of AI: to ensure trust and competitiveness. ",
     },
     {
       id: 3,
@@ -51,10 +51,10 @@ const TrainingContent = () => {
     <div>
       <div className=" bg-gray-100 px-[2em]  xl:px-[5em] py-[3em] ">
         <h2 className="text-center  mb-8 blueHeaderText ">Training Content</h2>
-        <p className="text-xl text-center text-zinc-600  mb-[1em] ">
+        {/* <p className="text-xl text-center text-zinc-600  mb-[1em] ">
           Explore our broad selection of curated AI courses from our partners
           for individuals, organizations, SME’s and much more.
-        </p>
+        </p> */}
 
         <div className="grid  sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10  mb-[3em] mt-[2em] ">
           {contents.map((item) => (

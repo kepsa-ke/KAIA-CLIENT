@@ -31,7 +31,8 @@ const Hero = () => {
                 Kenya AI Skilling Alliance
               </h2>
               <p className=" sm:text-xl  text-center max-w-4xl mt-5">
-                Position Kenya as the global hub for AI talent.
+                Position Kenya as the global hub for AI talent by training and
+                certifying 1M people on AI.
               </p>
             </div>
 
@@ -63,7 +64,7 @@ const Hero = () => {
                 {/* initiative by */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <p className="text-base sm:text-lg font-semibold">
-                    An initiative promoted by
+                    In partnership with
                   </p>
                   <img
                     src={Mic}
