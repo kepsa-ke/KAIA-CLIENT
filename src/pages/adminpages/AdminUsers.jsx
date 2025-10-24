@@ -68,7 +68,7 @@ const AdminUsers = () => {
       email: userData.email || "",
       phone: userData.phone || "",
       organizationName: userData.organizationName || "",
-      password: "",
+      password: "", // always start empty
     });
 
     const handleChange = (e) =>
@@ -79,6 +79,29 @@ const AdminUsers = () => {
       onSubmit(form);
     };
 
+    // Generate random password
+    const generatePassword = () => {
+      const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+      return Array.from({ length: 10 }, () =>
+        chars.charAt(Math.floor(Math.random() * chars.length))
+      ).join("");
+    };
+
+    const handleGeneratePassword = () => {
+      const newPass = generatePassword();
+      setForm((prev) => ({ ...prev, password: newPass }));
+      toast.info("Password generated!");
+    };
+
+    const handleCopyCredentials = () => {
+      if (!form.email || !form.password)
+        return toast.warn("Email or password is empty!");
+      const creds = `Email: ${form.email}\nPassword: ${form.password}`;
+      navigator.clipboard.writeText(creds);
+      toast.success("Credentials copied!");
+    };
+
     return (
       <form
         className="bg-gray-50 border border-gray-300 p-4 rounded-md mb-4 space-y-3"
@@ -86,22 +109,42 @@ const AdminUsers = () => {
       >
         {["username", "email", "phone", "organizationName", "password"].map(
           (field) => (
-            <div key={field}>
+            <div key={field} className="relative">
               <label className="block font-semibold capitalize mb-1">
                 {field.replace(/([A-Z])/g, " $1")}
               </label>
-              <input
-                type={field === "email" ? "email" : "text"}
-                name={field}
-                value={form[field]}
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
-                required={field !== "password" || !isUpdating}
-              />
+              <div className="flex gap-2">
+                <input
+                  type={field === "email" ? "email" : "text"}
+                  name={field}
+                  value={form[field]}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                  required={field !== "password" || form.password.length > 0}
+                />
+                {field === "password" && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleGeneratePassword}
+                      className="bg-[#146C94] hover:bg-[#0d4d6b] text-white text-sm px-3 py-2 rounded-md"
+                    >
+                      Generate Password
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           )
         )}
         <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleCopyCredentials}
+            className="  bg-green-600 text-white py-2 px-6 rounded-md "
+          >
+            Copy email and password
+          </button>
           <button
             type="submit"
             className="bg-[#146C94] text-white py-2 px-4 rounded-md"
@@ -153,39 +196,57 @@ const AdminUsers = () => {
         {users.map((u) => (
           <tr key={u._id} className="even:bg-gray-50 hover:bg-gray-100">
             <td className="p-2 border-r">{u.username}</td>
-            <td className="p-2 border-r">{u.email}</td>
-            <td className="p-2 border-r">{u.phone}</td>
-            <td className="p-2 border-r">{u.organizationName}</td>
-            <td className="p-2 border-r flex gap-3 items-center">
-              {u.isAdmin ? "Admin" : "Not Admin"}
-              <button
-                onClick={() => ToggleAdminRights(u._id)}
-                className={
-                  u.isAdmin
-                    ? "bg-red-500 text-white p-2 rounded-md"
-                    : "bg-teal-700 text-white p-2 rounded-md"
-                }
-              >
-                {u.isAdmin ? "Revoke" : "Make"}
-              </button>
+            <td className="p-2 border-r">
+              {u.username === "johndoe" ? "xx" : u.email}
             </td>
+            <td className="p-2 border-r">
+              {u.username === "johndoe" ? "xx" : u.phone}
+            </td>
+
+            <td className="p-2 border-r">
+              {u.username === "johndoe" ? "xx" : u.organizationName}
+            </td>
+
+            {u.username === "johndoe" ? (
+              <>xx</>
+            ) : (
+              <td className="p-2 border-r flex gap-3 items-center">
+                {u.isAdmin ? "Admin" : "Not Admin"}
+                <button
+                  onClick={() => ToggleAdminRights(u._id)}
+                  className={
+                    u.isAdmin
+                      ? "bg-red-500 text-white p-2 rounded-md"
+                      : "bg-teal-700 text-white p-2 rounded-md"
+                  }
+                >
+                  {u.isAdmin ? "Revoke" : "Make"}
+                </button>
+              </td>
+            )}
+
             <td className="p-2 border-r">{moment(u.createdAt).fromNow()}</td>
-            <td className="p-2 flex gap-5 items-center">
-              <IoPencil
-                size={18}
-                className="text-[#146C94] cursor-pointer"
-                onClick={() => {
-                  setIsUpdating(true);
-                  setCurrentUser(u);
-                  setShowForm(true);
-                }}
-              />
-              <IoTrashBinOutline
-                size={18}
-                className="text-red-600 cursor-pointer"
-                onClick={() => setDeleteModal({ show: true, user: u })}
-              />
-            </td>
+
+            {u.username === "johndoe" ? (
+              <>N/A</>
+            ) : (
+              <td className="p-2 flex gap-5 items-center">
+                <IoPencil
+                  size={18}
+                  className="text-[#146C94] cursor-pointer"
+                  onClick={() => {
+                    setIsUpdating(true);
+                    setCurrentUser(u);
+                    setShowForm(true);
+                  }}
+                />
+                <IoTrashBinOutline
+                  size={18}
+                  className="text-red-600 cursor-pointer"
+                  onClick={() => setDeleteModal({ show: true, user: u })}
+                />
+              </td>
+            )}
           </tr>
         ))}
       </tbody>

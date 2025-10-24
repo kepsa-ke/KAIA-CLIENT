@@ -131,6 +131,15 @@ const AdminHome = () => {
       <AdminNavbar />
       <div className=" mt-[5em] px-[2em]  xl:px-[5em]">
         <p className="font-bold">Hello {user?.username}</p>
+        {user?.isAdmin ? (
+          <p className="font-semibold mt-2 text-blue-600">
+            Full Admin Rights Granted
+          </p>
+        ) : (
+          <p className="font-semibold mt-2 text-blue-600">
+            Manage {user?.organizationName}, <span>courses, reports</span>
+          </p>
+        )}
       </div>
       <div className=" mt-[1em] px-[2em]  xl:px-[5em] h-[80vh] flex justify-center items-center">
         <div>

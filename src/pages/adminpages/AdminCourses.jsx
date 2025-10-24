@@ -71,7 +71,7 @@ const AdminCourses = () => {
       title: courseData.title || "",
       desc: courseData.desc || "",
       link: courseData.link || "",
-      organization: courseData.organization || "",
+      organization: courseData.organization || user?.organizationName,
       tag: courseData.tag || "",
       category: courseData.category || "",
       image: courseData.image || "",
@@ -134,7 +134,9 @@ const AdminCourses = () => {
               <label className="block font-semibold capitalize mb-1">
                 {field.replace(/([A-Z])/g, " $1")}
               </label>
+
               {field === "desc" ? (
+                // ✅ Description textarea
                 <textarea
                   name={field}
                   value={form[field]}
@@ -144,6 +146,7 @@ const AdminCourses = () => {
                   required
                 />
               ) : field === "category" ? (
+                // ✅ Category dropdown
                 <select
                   name={field}
                   value={form[field]}
@@ -153,10 +156,24 @@ const AdminCourses = () => {
                 >
                   <option value="">Select a category</option>
                   {CourseCategories.map((item, index) => (
-                    <option value={item}>{item}</option>
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
                   ))}
                 </select>
+              ) : field === "organization" ? (
+                // ✅ Readonly organization input
+                <input
+                  type="text"
+                  name={field}
+                  value={form[field]}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded-md bg-gray-100 text-gray-500"
+                  readOnly
+                  title="Can see but not edit"
+                />
               ) : (
+                // ✅ Default text input
                 <input
                   type={field === "email" ? "email" : "text"}
                   name={field}
