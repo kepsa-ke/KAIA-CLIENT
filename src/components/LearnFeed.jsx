@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AiOutlineSearch } from "react-icons/ai";
+import { AiOutlineArrowUp, AiOutlineSearch } from "react-icons/ai";
 
 import Photo from "../assets/photo1.png";
 import Photo2 from "../assets/photo2.png";
@@ -60,8 +60,40 @@ const LearnFeed = () => {
     }
   };
 
+  // scroll to top functionality
+  const [showArrow, setShowArrow] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 300) {
+        setShowArrow(true);
+      } else {
+        setShowArrow(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleScrollTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div>
+      {/* arrow to scroll to top */}
+      {showArrow && (
+        <div
+          className="fixed bottom-20 right-4 text-3xl z-[999] cursor-pointer bg-[#0067b8] text-zinc-50 rounded-full p-[5px]"
+          onClick={handleScrollTop}
+        >
+          <AiOutlineArrowUp />
+        </div>
+      )}
       {/* Search Bar */}
       <div className="flex items-center bg-gray-100 px-3 py-2 rounded-md w-full md:w-1/3 mb-6">
         <AiOutlineSearch className="text-lg mr-2 text-gray-500" />
@@ -143,13 +175,14 @@ const LearnFeed = () => {
               className="hover:shadow-lg p-2 rounded-xl transition"
             >
               <a href={course.link} target="_blank" rel="noopener noreferrer">
-                <img
-                  src={course.image}
-                  alt={course.title}
-                  height={300}
-                  width={400}
-                  className="rounded-xl"
-                />
+                <div className="w-full h-64 sm:h-72 md:h-80 flex items-center justify-center bg-gray-100 rounded-xl overflow-hidden">
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                </div>
+
                 <div className="mt-4">
                   <p className="text-[#0067b8] text-sm font-bold mb-3">
                     {course.tag}

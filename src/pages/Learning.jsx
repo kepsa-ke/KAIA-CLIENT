@@ -7,7 +7,7 @@ const Learning = () => {
   return (
     <div>
       <Navbar />
-      <div className="px-[2em]  xl:px-[5em] mt-[6em] mb-5">
+      <div className="px-[2em]  xl:px-[5em] mt-[6.4em] mb-5">
         <div className="mt-[3em]">
           <h1 className="text-4xl font-bold mb-4">Learn</h1>
           <p className="text-gray-600 mb-8">
