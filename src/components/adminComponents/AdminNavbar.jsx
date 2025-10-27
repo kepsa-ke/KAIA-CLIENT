@@ -23,7 +23,7 @@ const AdminNavbar = () => {
     : [
         { id: 1, title: "Home", goTo: "/admin-home" },
         { id: 7, title: "Courses", goTo: "/admin-courses" },
-        { id: 5, title: "Members", goTo: "/admin-members" },
+        // { id: 5, title: "Members", goTo: "/admin-members" },
         { id: 8, title: "Statistics", goTo: "/admin-stats" },
       ];
 

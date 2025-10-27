@@ -190,7 +190,7 @@ const MembershipForm = () => {
                   htmlFor="companyWebsite"
                   className="font-semibold text-gray-600"
                 >
-                  Organization Website / LinkedIn{" "}
+                  Link To Organization Website. (Actual Link)
                   <span className="text-red-500">*</span>
                 </label>
                 <input

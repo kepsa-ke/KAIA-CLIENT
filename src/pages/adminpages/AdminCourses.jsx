@@ -24,7 +24,7 @@ const AdminCourses = () => {
   const [viewModal, setViewModal] = useState({ show: false, course: null });
   const [deleteModal, setDeleteModal] = useState({ show: false, course: null });
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 5;
+  const recordsPerPage = 10;
 
   // Fetch courses
   const handleFetchCourses = async () => {
@@ -65,6 +65,19 @@ const AdminCourses = () => {
   const paginatedCourses = filteredCourses.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredCourses.length / recordsPerPage);
 
+  const [filter, setFilter] = useState("all");
+
+  const filteCourses = courses.filter((c) => {
+    const matchesSearch = [c.title, c.organization, c.category, c.tag].some(
+      (f) => f?.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    if (filter === "topic") return c.segment === "topic" && matchesSearch;
+    if (filter === "role") return c.segment === "role" && matchesSearch;
+    if (filter === "featured") return c.featured && matchesSearch;
+    return matchesSearch;
+  });
+
   // ---------- Course Form ----------
   const CourseForm = ({ onSubmit, onCancel, courseData = {} }) => {
     const [form, setForm] = useState({
@@ -75,6 +88,8 @@ const AdminCourses = () => {
       tag: courseData.tag || "",
       category: courseData.category || "",
       image: courseData.image || "",
+      segment: courseData.segment || "",
+      featured: courseData.featured || false,
     });
 
     const [preview, setPreview] = useState(courseData.image || "");
@@ -210,6 +225,37 @@ const AdminCourses = () => {
           )}
         </div>
 
+        {/* Segment Selector */}
+        <div>
+          <label className="block font-semibold mb-1">Course Type</label>
+          <select
+            name="segment"
+            value={form.segment || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-2 rounded-md"
+            required
+          >
+            <option value="">Select course type</option>
+            <option value="role">By Role</option>
+            <option value="topic">By Topic</option>
+          </select>
+        </div>
+        {/* admin make course featured */}
+        {user?.isAdmin && (
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featured"
+              name="featured"
+              checked={form.featured}
+              onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+            />
+            <label htmlFor="featured" className="font-semibold">
+              Mark as Featured
+            </label>
+          </div>
+        )}
+
         <div className="flex gap-3">
           {loadingAction || uploadingImage ? (
             <p>Loading ...</p>
@@ -267,6 +313,8 @@ const AdminCourses = () => {
             "Category",
             "Tag",
             "Email",
+            "Segment",
+            "Featured",
             "Status",
             "Created",
             "Actions",
@@ -285,6 +333,16 @@ const AdminCourses = () => {
             <td className="p-2 border-r">{c.category}</td>
             <td className="p-2 border-r">{c.tag}</td>
             <td className="p-2 border-r">{c.email}</td>
+            <td className="p-2 border-r capitalize">{c.segment}</td>
+            <td className="p-2 border-r">
+              {c.featured ? (
+                <span className="text-yellow-600 font-semibold">
+                  ⭐ Featured
+                </span>
+              ) : (
+                <span className="text-gray-500">—</span>
+              )}
+            </td>
             {user?.isAdmin || user?.email === c.email ? (
               <td className="p-2 border-r">
                 {c.approved ? (
@@ -443,6 +501,42 @@ const AdminCourses = () => {
           </button>
         </div>
 
+        {/* filters */}
+        {/* <div className="flex gap-3">
+          <button
+            onClick={() => setFilter("all")}
+            className={`px-3 py-1 border rounded-md ${
+              filter === "all" ? "bg-[#146C94] text-white" : ""
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter("topic")}
+            className={`px-3 py-1 border rounded-md ${
+              filter === "topic" ? "bg-[#146C94] text-white" : ""
+            }`}
+          >
+            By Topic
+          </button>
+          <button
+            onClick={() => setFilter("role")}
+            className={`px-3 py-1 border rounded-md ${
+              filter === "role" ? "bg-[#146C94] text-white" : ""
+            }`}
+          >
+            By Role
+          </button>
+          <button
+            onClick={() => setFilter("featured")}
+            className={`px-3 py-1 border rounded-md ${
+              filter === "featured" ? "bg-[#146C94] text-white" : ""
+            }`}
+          >
+            Featured
+          </button>
+        </div> */}
+
         {/* Create/Update Form */}
         {showForm && (
           <CourseForm
@@ -466,6 +560,7 @@ const AdminCourses = () => {
             <CoursesTable courses={paginatedCourses} />
 
             {/* Pagination */}
+            {/* Pagination */}
             <div className="flex justify-end items-center mt-4 gap-3">
               <button
                 disabled={currentPage === 1}
@@ -474,19 +569,50 @@ const AdminCourses = () => {
               >
                 Prev
               </button>
-              {[...Array(totalPages).keys()].map((i) => (
+
+              {/* Previous range button */}
+              {currentPage > 20 && (
                 <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded-md ${
-                    currentPage === i + 1
-                      ? "bg-[#146C94] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
+                  onClick={() => setCurrentPage(currentPage - 20)}
+                  className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
                 >
-                  {i + 1}
+                  Previous Range
                 </button>
-              ))}
+              )}
+
+              {[...Array(totalPages).keys()].map((i) => {
+                // Only show page numbers within current range (±10 pages)
+                const pageNumber = i + 1;
+                const showNumber =
+                  Math.abs(pageNumber - currentPage) <= 10 ||
+                  pageNumber === 1 ||
+                  pageNumber === totalPages;
+
+                return showNumber ? (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 border rounded-md ${
+                      currentPage === i + 1
+                        ? "bg-[#146C94] text-white"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ) : null;
+              })}
+
+              {/* Next range button */}
+              {currentPage + 10 < totalPages && (
+                <button
+                  onClick={() => setCurrentPage(currentPage + 20)}
+                  className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
+                >
+                  Next Range
+                </button>
+              )}
+
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((p) => p + 1)}

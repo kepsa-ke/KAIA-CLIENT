@@ -34,7 +34,7 @@ const AdminMembers = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 5;
+  const recordsPerPage = 10;
 
   // Fetch members
   const handleFetchMembers = async () => {
@@ -262,7 +262,7 @@ const AdminMembers = () => {
   );
 
   return (
-    <div className="px-8">
+    <div className="px-8 mb-8">
       <AdminNavbar />
       <div className="mt-32">
         {user?.isAdmin && (
@@ -318,19 +318,50 @@ const AdminMembers = () => {
               >
                 Prev
               </button>
-              {[...Array(totalPages).keys()].map((i) => (
+
+              {/* Previous range button */}
+              {currentPage > 20 && (
                 <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded-md ${
-                    currentPage === i + 1
-                      ? "bg-[#146C94] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
+                  onClick={() => setCurrentPage(currentPage - 20)}
+                  className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
                 >
-                  {i + 1}
+                  Previous Range
                 </button>
-              ))}
+              )}
+
+              {[...Array(totalPages).keys()].map((i) => {
+                // Only show page numbers within current range (±10 pages)
+                const pageNumber = i + 1;
+                const showNumber =
+                  Math.abs(pageNumber - currentPage) <= 10 ||
+                  pageNumber === 1 ||
+                  pageNumber === totalPages;
+
+                return showNumber ? (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 border rounded-md ${
+                      currentPage === i + 1
+                        ? "bg-[#146C94] text-white"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ) : null;
+              })}
+
+              {/* Next range button */}
+              {currentPage + 10 < totalPages && (
+                <button
+                  onClick={() => setCurrentPage(currentPage + 20)}
+                  className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
+                >
+                  Next Range
+                </button>
+              )}
+
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((p) => p + 1)}
