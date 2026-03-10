@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const instance = axios.create({
-  // baseURL: "http://localhost:8000/api/v1",
+  //baseURL: "http://localhost:8000/api/v1",
   baseURL: "https://kaia-server-khaki.vercel.app/api/v1", // kepsa deployment
 });
 
-// Add response interceptor (check is token is expired)
+//Add response interceptor (check is token is expired)
 instance.interceptors.response.use(
   (response) => {
     return response;

@@ -12,6 +12,7 @@ import { CourseCategories } from "../../data";
 import { GrEmptyCircle } from "react-icons/gr";
 import { MdOutlineCancel } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
+import AdminLayout from "../../components/adminComponents/AdminLayout";
 
 const AdminCourses = () => {
   const { user } = useSelector((state) => state.auth);
@@ -57,8 +58,8 @@ const AdminCourses = () => {
   // Filter + Pagination
   const filteredCourses = courses.filter((c) =>
     [c.title, c.organization, c.category, c.tag].some((f) =>
-      f?.toLowerCase().includes(searchText.toLowerCase())
-    )
+      f?.toLowerCase().includes(searchText.toLowerCase()),
+    ),
   );
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -69,7 +70,7 @@ const AdminCourses = () => {
 
   const filteCourses = courses.filter((c) => {
     const matchesSearch = [c.title, c.organization, c.category, c.tag].some(
-      (f) => f?.toLowerCase().includes(searchText.toLowerCase())
+      (f) => f?.toLowerCase().includes(searchText.toLowerCase()),
     );
 
     if (filter === "topic") return c.segment === "topic" && matchesSearch;
@@ -119,7 +120,7 @@ const AdminCourses = () => {
           {
             method: "POST",
             body: formData,
-          }
+          },
         );
 
         const data = await res.json();
@@ -199,7 +200,7 @@ const AdminCourses = () => {
                 />
               )}
             </div>
-          )
+          ),
         )}
 
         {/* Image upload */}
@@ -293,7 +294,7 @@ const AdminCourses = () => {
       await axios.patch(
         `/courses/${course._id}/toggle-approval`,
         { approved: !course.approved },
-        config
+        config,
       );
       toast.success(`course ${course.approved ? "hidden" : "approved"}`);
       handleFetchCourses();
@@ -422,7 +423,7 @@ const AdminCourses = () => {
         let response = await axios.put(
           `/courses/${currentCourse._id}`,
           formData,
-          config
+          config,
         );
         if (response.data) {
           setLoadingAction(false);
@@ -455,7 +456,7 @@ const AdminCourses = () => {
       };
       let res = await axios.delete(
         `/courses/${deleteModal.course._id}`,
-        config
+        config,
       );
       if (res) {
         setLoadingAction(false);
@@ -470,39 +471,39 @@ const AdminCourses = () => {
   };
 
   return (
-    <div className="px-8">
-      <AdminNavbar />
-      <div className="mt-32">
-        <h2 className="text-2xl font-bold mb-1">Manage Courses</h2>
-        <p>All courses in one dashboard</p>
+    <AdminLayout>
+      <div className="px-8">
+        <div className="mt-4">
+          <h2 className="text-2xl font-bold mb-1">Manage Courses</h2>
+          <p>All courses in one dashboard</p>
 
-        {/* Search and Create */}
-        <div className="mt-6 mb-4 flex justify-between items-center">
-          <div className="flex items-center bg-gray-200 px-3 py-2 rounded-md w-1/3">
-            <AiOutlineSearch className="text-lg mr-2" />
-            <input
-              type="text"
-              placeholder="Search course..."
-              className="bg-transparent outline-none w-full"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
+          {/* Search and Create */}
+          <div className="mt-6 mb-4 flex justify-between items-center">
+            <div className="flex items-center bg-gray-200 px-3 py-2 rounded-md w-1/3">
+              <AiOutlineSearch className="text-lg mr-2" />
+              <input
+                type="text"
+                placeholder="Search course..."
+                className="bg-transparent outline-none w-full"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+            </div>
+
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setIsUpdating(false);
+                setCurrentCourse(null);
+              }}
+              className="bg-[#146C94] text-white py-2 px-4 rounded-md"
+            >
+              Create Course
+            </button>
           </div>
 
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setIsUpdating(false);
-              setCurrentCourse(null);
-            }}
-            className="bg-[#146C94] text-white py-2 px-4 rounded-md"
-          >
-            Create Course
-          </button>
-        </div>
-
-        {/* filters */}
-        {/* <div className="flex gap-3">
+          {/* filters */}
+          {/* <div className="flex gap-3">
           <button
             onClick={() => setFilter("all")}
             className={`px-3 py-1 border rounded-md ${
@@ -537,189 +538,192 @@ const AdminCourses = () => {
           </button>
         </div> */}
 
-        {/* Create/Update Form */}
-        {showForm && (
-          <CourseForm
-            onSubmit={handleSubmitForm}
-            onCancel={() => setShowForm(false)}
-            courseData={isUpdating ? currentCourse : {}}
-          />
-        )}
+          {/* Create/Update Form */}
+          {showForm && (
+            <CourseForm
+              onSubmit={handleSubmitForm}
+              onCancel={() => setShowForm(false)}
+              courseData={isUpdating ? currentCourse : {}}
+            />
+          )}
 
-        <h3 className="text-xl mb-3 font-semibold">
-          Total: {courses.length} courses
-        </h3>
+          <h3 className="text-xl mb-3 font-semibold">
+            Total: {courses.length} courses
+          </h3>
 
-        {/* Table */}
-        {loading ? (
-          <div className="flex justify-center items-center h-[40vh]">
-            <Spinner message="Fetching courses..." />
-          </div>
-        ) : (
-          <>
-            <CoursesTable courses={paginatedCourses} />
+          {/* Table */}
+          {loading ? (
+            <div className="flex justify-center items-center h-[40vh]">
+              <Spinner message="Fetching courses..." />
+            </div>
+          ) : (
+            <>
+              <CoursesTable courses={paginatedCourses} />
 
-            {/* Pagination */}
-            {/* Pagination */}
-            <div className="flex justify-end items-center mt-4 gap-3">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-                className="px-3 py-1 border rounded-md disabled:opacity-50"
-              >
-                Prev
-              </button>
-
-              {/* Previous range button */}
-              {currentPage > 20 && (
+              {/* Pagination */}
+              {/* Pagination */}
+              <div className="flex justify-end items-center mt-4 gap-3">
                 <button
-                  onClick={() => setCurrentPage(currentPage - 20)}
-                  className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="px-3 py-1 border rounded-md disabled:opacity-50"
                 >
-                  Previous Range
+                  Prev
                 </button>
-              )}
 
-              {[...Array(totalPages).keys()].map((i) => {
-                // Only show page numbers within current range (±10 pages)
-                const pageNumber = i + 1;
-                const showNumber =
-                  Math.abs(pageNumber - currentPage) <= 10 ||
-                  pageNumber === 1 ||
-                  pageNumber === totalPages;
-
-                return showNumber ? (
+                {/* Previous range button */}
+                {currentPage > 20 && (
                   <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-1 border rounded-md ${
-                      currentPage === i + 1
-                        ? "bg-[#146C94] text-white"
-                        : "hover:bg-gray-100"
-                    }`}
+                    onClick={() => setCurrentPage(currentPage - 20)}
+                    className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
                   >
-                    {i + 1}
+                    Previous Range
                   </button>
-                ) : null;
-              })}
+                )}
 
-              {/* Next range button */}
-              {currentPage + 10 < totalPages && (
-                <button
-                  onClick={() => setCurrentPage(currentPage + 20)}
-                  className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
-                >
-                  Next Range
-                </button>
-              )}
+                {[...Array(totalPages).keys()].map((i) => {
+                  // Only show page numbers within current range (±10 pages)
+                  const pageNumber = i + 1;
+                  const showNumber =
+                    Math.abs(pageNumber - currentPage) <= 10 ||
+                    pageNumber === 1 ||
+                    pageNumber === totalPages;
 
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="px-3 py-1 border rounded-md disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-          </>
-        )}
+                  return showNumber ? (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`px-3 py-1 border rounded-md ${
+                        currentPage === i + 1
+                          ? "bg-[#146C94] text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ) : null;
+                })}
 
-        {/* ---------- View Modal ---------- */}
-        {viewModal.show && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg">
-              <h2 className="text-xl font-bold mb-2">
-                {viewModal.course.title}
-              </h2>
-              <img
-                src={viewModal.course.image}
-                alt={viewModal.course.title}
-                className="rounded-md mb-3 w-full max-h-48 object-cover"
-              />
-              <p className="text-gray-700 mb-3">{viewModal.course.desc}</p>
-              <div className="space-y-1 text-sm">
-                <p>
-                  <span className="font-semibold">Organization:</span>{" "}
-                  {viewModal.course.organization}
-                </p>
-                <p>
-                  <span className="font-semibold">Category:</span>{" "}
-                  {viewModal.course.category}
-                </p>
-                <p>
-                  <span className="font-semibold">Tag:</span>{" "}
-                  {viewModal.course.tag}
-                </p>
-                <p>
-                  <span className="font-semibold">Email:</span>{" "}
-                  {viewModal.course.email}
-                </p>
-                <p>
-                  <span className="font-semibold">Link:</span>{" "}
-                  <a
-                    href={viewModal.course.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 underline"
+                {/* Next range button */}
+                {currentPage + 10 < totalPages && (
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 20)}
+                    className="px-3 py-1 border rounded-md bg-zinc-100 text-blue-600 underline text-sm"
                   >
-                    Visit course
-                  </a>
-                </p>
-                <p className="text-gray-500 text-xs">
-                  Added {moment(viewModal.course.createdAt).fromNow()}
-                </p>
-              </div>
-              <div className="flex justify-end mt-4">
-                <button
-                  className="px-4 py-2 bg-gray-300 rounded-md"
-                  onClick={() => setViewModal({ show: false, course: null })}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ---------- Delete Modal ---------- */}
-        {deleteModal.show && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
-              <h2 className="text-lg font-semibold mb-3">
-                Confirm Delete Course
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Are you sure you want to delete{" "}
-                <span className="font-semibold">
-                  {deleteModal.course?.title}
-                </span>
-                ?
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  className="px-4 py-2 bg-gray-300 rounded-md"
-                  onClick={() => setDeleteModal({ show: false, course: null })}
-                >
-                  Cancel
-                </button>
+                    Next Range
+                  </button>
+                )}
 
                 <button
-                  className={`px-4 py-2 rounded-md text-white ${
-                    loadingAction
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-red-600"
-                  }`}
-                  onClick={handleDeleteCourse}
-                  disabled={loadingAction}
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="px-3 py-1 border rounded-md disabled:opacity-50"
                 >
-                  {loadingAction ? "Deleting..." : "Delete"}
+                  Next
                 </button>
               </div>
+            </>
+          )}
+
+          {/* ---------- View Modal ---------- */}
+          {viewModal.show && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg">
+                <h2 className="text-xl font-bold mb-2">
+                  {viewModal.course.title}
+                </h2>
+                <img
+                  src={viewModal.course.image}
+                  alt={viewModal.course.title}
+                  className="rounded-md mb-3 w-full max-h-48 object-cover"
+                />
+                <p className="text-gray-700 mb-3">{viewModal.course.desc}</p>
+                <div className="space-y-1 text-sm">
+                  <p>
+                    <span className="font-semibold">Organization:</span>{" "}
+                    {viewModal.course.organization}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Category:</span>{" "}
+                    {viewModal.course.category}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Tag:</span>{" "}
+                    {viewModal.course.tag}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Email:</span>{" "}
+                    {viewModal.course.email}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Link:</span>{" "}
+                    <a
+                      href={viewModal.course.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Visit course
+                    </a>
+                  </p>
+                  <p className="text-gray-500 text-xs">
+                    Added {moment(viewModal.course.createdAt).fromNow()}
+                  </p>
+                </div>
+                <div className="flex justify-end mt-4">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded-md"
+                    onClick={() => setViewModal({ show: false, course: null })}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* ---------- Delete Modal ---------- */}
+          {deleteModal.show && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
+                <h2 className="text-lg font-semibold mb-3">
+                  Confirm Delete Course
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Are you sure you want to delete{" "}
+                  <span className="font-semibold">
+                    {deleteModal.course?.title}
+                  </span>
+                  ?
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded-md"
+                    onClick={() =>
+                      setDeleteModal({ show: false, course: null })
+                    }
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    className={`px-4 py-2 rounded-md text-white ${
+                      loadingAction
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-red-600"
+                    }`}
+                    onClick={handleDeleteCourse}
+                    disabled={loadingAction}
+                  >
+                    {loadingAction ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

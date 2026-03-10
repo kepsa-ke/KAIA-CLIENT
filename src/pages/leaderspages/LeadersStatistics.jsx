@@ -15,8 +15,6 @@ import { saveAs } from "file-saver";
 import AdminNavbar from "../../components/adminComponents/AdminNavbar";
 import AdminLayout from "../../components/adminComponents/AdminLayout";
 import { toast } from "react-toastify";
-import { FaCheckCircle } from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
 
 const MONTHS = [
   { value: 1, label: "January" },
@@ -33,7 +31,7 @@ const MONTHS = [
   { value: 12, label: "December" },
 ];
 
-const AdminReports = () => {
+const LeadersStatistics = () => {
   const { user } = useSelector((state) => state.auth);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,8 +76,8 @@ const AdminReports = () => {
       setLoading(true);
       const params = { ...filters };
 
-      if (!user?.isAdmin) {
-        params.createdBy = user?.email;
+      if (!user.isAdmin) {
+        params.createdBy = user.email;
       }
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
       const res = await axios.get("/reports", { params, ...config });
@@ -106,7 +104,7 @@ const AdminReports = () => {
 
   useEffect(() => {
     fetchReports();
-    if (user?.isAdmin) {
+    if (user.isAdmin) {
       fetchSummary();
     }
   }, []);
@@ -225,6 +223,7 @@ const AdminReports = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this report?")) return;
     try {
+      // send token in header for authentication
       const config = {
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -295,29 +294,6 @@ const AdminReports = () => {
     return MONTHS.find((m) => m.value === monthValue)?.label || monthValue;
   };
 
-  // handle toggle published status
-  const [loadingPublish, setLoadingPublish] = useState(false);
-  const handleTogglePublish = async (report) => {
-    setLoadingPublish(true);
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      };
-      await axios.patch(
-        `/reports/${report._id}/publish`,
-        { published: !report.published },
-        config,
-      );
-      fetchReports();
-    } catch (err) {
-      console.error("Error toggling publish status:", err);
-    } finally {
-      setLoadingPublish(false);
-    }
-  };
-
   return (
     <AdminLayout>
       <div className="p-6 bg-gray-50 min-h-screen">
@@ -345,12 +321,12 @@ const AdminReports = () => {
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <div className="flex flex-wrap gap-4 items-end">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              {/* <label className="block text-sm font-medium text-gray-700 mb-1">
                 Search
-              </label>
+              </label> */}
               <input
                 type="text"
-                placeholder="Search by organization or email..."
+                placeholder="search"
                 value={filters.search}
                 onChange={(e) =>
                   setFilters({ ...filters, search: e.target.value })
@@ -409,7 +385,7 @@ const AdminReports = () => {
         </div>
 
         {/* Summary Cards (Admin only) */}
-        {user?.isAdmin && summary && summary.length > 0 && (
+        {user.isAdmin && summary && summary.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
               <p className="text-sm text-gray-600">Total Reports</p>
@@ -439,7 +415,7 @@ const AdminReports = () => {
         )}
 
         {/* Action Buttons */}
-        {user?.isAdmin && reports.length > 0 && (
+        {user.isAdmin && reports.length > 0 && (
           <div className="flex justify-end mb-4">
             <button
               onClick={handleDownloadExcel}
@@ -503,12 +479,8 @@ const AdminReports = () => {
                     <th className="p-4 text-left text-sm font-semibold text-gray-700">
                       By Leaders
                     </th>
-
                     <th className="p-4 text-left text-sm font-semibold text-gray-700">
                       Links
-                    </th>
-                    <th className="p-4 text-left text-sm font-semibold text-gray-700">
-                      Status
                     </th>
                     <th className="p-4 text-left text-sm font-semibold text-gray-700">
                       Actions
@@ -561,17 +533,6 @@ const AdminReports = () => {
                           <span className="text-sm text-gray-400">—</span>
                         )}
                       </td>
-                      <td>
-                        {r.published ? (
-                          <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                            Published
-                          </span>
-                        ) : (
-                          <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                            Draft
-                          </span>
-                        )}
-                      </td>
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <button
@@ -581,31 +542,6 @@ const AdminReports = () => {
                           >
                             <IoPencil className="w-4 h-4" />
                           </button>
-
-                          <>
-                            {loadingPublish ? (
-                              <span className="text-sm">...</span>
-                            ) : (
-                              <>
-                                {r.published ? (
-                                  <MdOutlineCancel
-                                    size={18}
-                                    className="text-orange-500 cursor-pointer"
-                                    title="Unpublish News"
-                                    onClick={() => handleTogglePublish(r)}
-                                  />
-                                ) : (
-                                  <FaCheckCircle
-                                    size={18}
-                                    className="text-green-600 cursor-pointer"
-                                    title="Publish News"
-                                    onClick={() => handleTogglePublish(r)}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </>
-
                           {(user.isAdmin || r.createdBy === user?.email) && (
                             <button
                               onClick={() => handleDelete(r._id)}
@@ -895,4 +831,4 @@ const AdminReports = () => {
   );
 };
 
-export default AdminReports;
+export default LeadersStatistics;

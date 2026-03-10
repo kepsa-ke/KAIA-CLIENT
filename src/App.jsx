@@ -12,8 +12,27 @@ import AdminUsers from "./pages/adminpages/AdminUsers";
 import AdminCourses from "./pages/adminpages/AdminCourses";
 import AdminMembers from "./pages/adminpages/AdminMembers";
 import AdminRequests from "./pages/adminpages/AdminRequests";
-import ImpactReportsPage from "./pages/adminpages/AdminReports";
+
 import AdminPartners from "./pages/adminpages/AdminPartners";
+import AdminNews from "./pages/adminpages/AdminNews";
+import LeadersStatistics from "./pages/leaderspages/LeadersStatistics";
+import LeadersNews from "./pages/leaderspages/LeadersNews";
+import LeadersHome from "./pages/leaderspages/LeadersHome";
+import News from "./pages/News";
+import ResetPassword from "./pages/ResetPassword";
+import AdminBlogs from "./pages/adminpages/AdminBlogs";
+import LeadersBlogs from "./pages/leaderspages/LeadersBlogs";
+import Blogs from "./pages/Blogs";
+import AdminEvents from "./pages/adminpages/AdminEvents";
+import LeadersEvents from "./pages/leaderspages/LeadersEvents";
+import Events from "./pages/Events";
+import AdminJobs from "./pages/adminpages/AdminJobs";
+import LeadersJobs from "./pages/leaderspages/LeadersJobs";
+import Jobs from "./pages/Jobs";
+import AdminReports from "./pages/adminpages/AdminReports";
+import AdminTrainingPartners from "./pages/adminpages/AdminTrainingPartners";
+import LeadersTrainingPartner from "./pages/leaderspages/LeadersTrainingPartner";
+import TrainingPartners from "./pages/TrainingPartners";
 
 function App() {
   return (
@@ -23,16 +42,42 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/membership" element={<MembershipForm />} />
           <Route path="/learning" element={<Learning />} />
+          <Route path="/training-partners" element={<TrainingPartners />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/jobs" element={<Jobs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/password-reset" element={<ResetPassword />} />
           {/* admin pages */}
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-users" element={<AdminUsers />} />
           <Route path="/admin-courses" element={<AdminCourses />} />
           <Route path="/admin-members" element={<AdminMembers />} />
           <Route path="/admin-requests" element={<AdminRequests />} />
-          <Route path="/admin-stats" element={<ImpactReportsPage />} />
+          <Route path="/admin-stats" element={<AdminReports />} />
           <Route path="/admin-partners" element={<AdminPartners />} />
+          <Route path="/admin-news" element={<AdminNews />} />
+          <Route path="/admin-blogs" element={<AdminBlogs />} />
+          <Route path="/admin-events" element={<AdminEvents />} />
+          <Route path="/admin-jobs" element={<AdminJobs />} />
+          <Route
+            path="/admin-training-partners"
+            element={<AdminTrainingPartners />}
+          />
+
+          {/* leaders pages */}
+          <Route path="/leaders-home" element={<LeadersHome />} />
+          <Route path="/leaders-stats" element={<LeadersStatistics />} />
+          <Route path="/leaders-news" element={<LeadersNews />} />
+          <Route path="/leaders-blogs" element={<LeadersBlogs />} />
+          <Route path="/leaders-events" element={<LeadersEvents />} />
+          <Route path="/leaders-jobs" element={<LeadersJobs />} />
+          <Route
+            path="/leaders-training-partners"
+            element={<LeadersTrainingPartner />}
+          />
         </Routes>
       </BrowserRouter>
       <ToastContainer />

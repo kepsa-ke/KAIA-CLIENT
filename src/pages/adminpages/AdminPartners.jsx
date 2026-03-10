@@ -8,6 +8,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { IoTrashBinOutline, IoPencil } from "react-icons/io5";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import AdminLayout from "../../components/adminComponents/AdminLayout";
 
 const AdminPartners = () => {
   const { user } = useSelector((state) => state.auth);
@@ -55,7 +56,7 @@ const AdminPartners = () => {
 
   // ---------------- FILTER + PAGINATION ----------------
   const filteredPartners = partners.filter((c) =>
-    c.organizationName?.toLowerCase().includes(searchText.toLowerCase())
+    c.organizationName?.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const lastIndex = currentPage * recordsPerPage;
@@ -94,7 +95,7 @@ const AdminPartners = () => {
           {
             method: "POST",
             body: formData,
-          }
+          },
         );
         const data = await res.json();
         setForm((prev) => ({ ...prev, image: data.secure_url }));
@@ -277,7 +278,7 @@ const AdminPartners = () => {
       };
       const response = await axios.delete(
         `/partners/${deleteModal.partner._id}`,
-        config
+        config,
       );
       // console.log("Response:", response);
       if (response) {
@@ -329,130 +330,133 @@ const AdminPartners = () => {
 
   // ---------------- UI ----------------
   return (
-    <div className="px-8">
-      <AdminNavbar />
-      <div className="mt-32">
-        <h2 className="text-2xl font-bold mb-1">Manage Technical Partners</h2>
-        <p>All partners in one dashboard</p>
+    <AdminLayout>
+      <div className="px-8">
+        <div className="mt-2">
+          <h2 className="text-2xl font-bold mb-1">Manage Technical Partners</h2>
+          <p>All partners in one dashboard</p>
 
-        {/* Search + Create */}
-        <div className="mt-6 mb-4 flex justify-between items-center">
-          <div className="flex items-center bg-gray-200 px-3 py-2 rounded-md w-1/3">
-            <AiOutlineSearch className="text-lg mr-2" />
-            <input
-              type="text"
-              placeholder="Search partner..."
-              className="bg-transparent outline-none w-full"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-          </div>
-
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setIsUpdating(false);
-              setCurrentPartner(null);
-            }}
-            className="bg-[#146C94] text-white py-2 px-4 rounded-md"
-          >
-            Create Partner
-          </button>
-        </div>
-
-        {/* Create/Update Form */}
-        {showForm && (
-          <PartnerForm
-            onSubmit={handleSubmitForm}
-            onCancel={() => setShowForm(false)}
-            partnerData={isUpdating ? currentPartner : {}}
-          />
-        )}
-
-        <h3 className="text-xl mb-3 font-semibold">
-          Total: {partners.length} technical partners
-        </h3>
-
-        {/* Table */}
-        {loading ? (
-          <div className="flex justify-center items-center h-[40vh]">
-            <Spinner message="Fetching partners..." />
-          </div>
-        ) : (
-          <>
-            <PartnerTable partners={paginatedPartners} />
-
-            {/* Pagination */}
-            <div className="flex justify-end items-center mt-4 gap-3">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-                className="px-3 py-1 border rounded-md disabled:opacity-50"
-              >
-                Prev
-              </button>
-              {[...Array(totalPages).keys()].map((i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded-md ${
-                    currentPage === i + 1
-                      ? "bg-[#146C94] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="px-3 py-1 border rounded-md disabled:opacity-50"
-              >
-                Next
-              </button>
+          {/* Search + Create */}
+          <div className="mt-6 mb-4 flex justify-between items-center">
+            <div className="flex items-center bg-gray-200 px-3 py-2 rounded-md w-1/3">
+              <AiOutlineSearch className="text-lg mr-2" />
+              <input
+                type="text"
+                placeholder="Search partner..."
+                className="bg-transparent outline-none w-full"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
             </div>
-          </>
-        )}
 
-        {/* Delete Modal */}
-        {deleteModal.show && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
-              <h2 className="text-lg font-semibold mb-3">
-                Confirm Delete Partner
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Are you sure you want to delete{" "}
-                <span className="font-semibold">
-                  {deleteModal.partner?.organizationName}
-                </span>
-                ?
-              </p>
-              <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setIsUpdating(false);
+                setCurrentPartner(null);
+              }}
+              className="bg-[#146C94] text-white py-2 px-4 rounded-md"
+            >
+              Create Partner
+            </button>
+          </div>
+
+          {/* Create/Update Form */}
+          {showForm && (
+            <PartnerForm
+              onSubmit={handleSubmitForm}
+              onCancel={() => setShowForm(false)}
+              partnerData={isUpdating ? currentPartner : {}}
+            />
+          )}
+
+          <h3 className="text-xl mb-3 font-semibold">
+            Total: {partners.length} technical partners
+          </h3>
+
+          {/* Table */}
+          {loading ? (
+            <div className="flex justify-center items-center h-[40vh]">
+              <Spinner message="Fetching partners..." />
+            </div>
+          ) : (
+            <>
+              <PartnerTable partners={paginatedPartners} />
+
+              {/* Pagination */}
+              <div className="flex justify-end items-center mt-4 gap-3">
                 <button
-                  className="px-4 py-2 bg-gray-300 rounded-md"
-                  onClick={() => setDeleteModal({ show: false, partner: null })}
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="px-3 py-1 border rounded-md disabled:opacity-50"
                 >
-                  Cancel
+                  Prev
                 </button>
+                {[...Array(totalPages).keys()].map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 border rounded-md ${
+                      currentPage === i + 1
+                        ? "bg-[#146C94] text-white"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
                 <button
-                  className={`px-4 py-2 rounded-md text-white ${
-                    loadingAction
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-red-600"
-                  }`}
-                  onClick={handleDeletePartner}
-                  disabled={loadingAction}
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="px-3 py-1 border rounded-md disabled:opacity-50"
                 >
-                  {loadingAction ? "Deleting..." : "Delete"}
+                  Next
                 </button>
               </div>
+            </>
+          )}
+
+          {/* Delete Modal */}
+          {deleteModal.show && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
+                <h2 className="text-lg font-semibold mb-3">
+                  Confirm Delete Partner
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Are you sure you want to delete{" "}
+                  <span className="font-semibold">
+                    {deleteModal.partner?.organizationName}
+                  </span>
+                  ?
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded-md"
+                    onClick={() =>
+                      setDeleteModal({ show: false, partner: null })
+                    }
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={`px-4 py-2 rounded-md text-white ${
+                      loadingAction
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-red-600"
+                    }`}
+                    onClick={handleDeletePartner}
+                    disabled={loadingAction}
+                  >
+                    {loadingAction ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

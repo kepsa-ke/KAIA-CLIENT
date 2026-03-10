@@ -12,6 +12,8 @@ import TechnicalPartners from "../components/TechnicalPartners";
 import Footer from "../components/Footer";
 import Principles from "../components/Principles";
 import ImpactOverview from "../components/ImpactOverview";
+import NewsCarousel from "../components/NewsCarousel";
+import EventsCarousel from "../components/EventsCarousel";
 
 const Home = () => {
   return (
@@ -21,7 +23,9 @@ const Home = () => {
       <Mission />
       <div className="my-[3em]" />
       <Pillars />
+      <NewsCarousel />
       <ImpactOverview />
+      <EventsCarousel />
       <ReqInfo />
       <WhyJoin />
       <AimedAt />

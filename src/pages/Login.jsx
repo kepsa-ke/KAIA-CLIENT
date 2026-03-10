@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { login, reset } from "../features/auth/authSlice";
 import Spinner from "../components/Spinner";
@@ -17,7 +17,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   useEffect(() => {
@@ -29,7 +29,11 @@ const Login = () => {
 
     if (user) {
       // handleLogout();
-      navigate("/admin-home");
+      if (user.isAdmin) {
+        navigate("/admin-home");
+      } else {
+        navigate("/leaders-home");
+      }
       // toast.success("Welcome Back");
     }
 
@@ -149,6 +153,15 @@ const Login = () => {
                     Sign In
                   </button>
                 )}
+                {/* forgot password */}
+                <div className="mt-4">
+                  <Link
+                    to="/password-reset"
+                    className="text-[#0067b8] underline"
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
               </div>
             </form>
           </div>

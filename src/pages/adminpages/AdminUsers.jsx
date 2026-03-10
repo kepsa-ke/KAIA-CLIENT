@@ -9,6 +9,7 @@ import { IoTrashBinOutline } from "react-icons/io5";
 import { IoPencil } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import AdminLayout from "../../components/adminComponents/AdminLayout";
 
 const AdminUsers = () => {
   const { user } = useSelector((state) => state.auth);
@@ -53,8 +54,8 @@ const AdminUsers = () => {
   // Filter + Pagination
   const filteredUsers = allUsers.filter((u) =>
     [u.email, u.phone, u.organizationName].some((f) =>
-      f?.toLowerCase().includes(searchText.toLowerCase())
-    )
+      f?.toLowerCase().includes(searchText.toLowerCase()),
+    ),
   );
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -83,7 +84,7 @@ const AdminUsers = () => {
       const chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
       return Array.from({ length: 10 }, () =>
-        chars.charAt(Math.floor(Math.random() * chars.length))
+        chars.charAt(Math.floor(Math.random() * chars.length)),
       ).join("");
     };
 
@@ -272,121 +273,122 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="px-8">
-      <AdminNavbar />
-      <div className="mt-32">
-        <h2 className="text-2xl font-bold mb-1">Manage All Users</h2>
-        <p>All users in one dashboard</p>
+    <AdminLayout>
+      <div className="px-8">
+        <div className="mt-4">
+          <h2 className="text-2xl font-bold mb-1">Manage All Users</h2>
+          <p>All users in one dashboard</p>
 
-        {/* Search and Create */}
-        <div className="mt-6 mb-4 flex justify-between items-center">
-          <div className="flex items-center bg-gray-200 px-3 py-2 rounded-md w-1/3">
-            <AiOutlineSearch className="text-lg mr-2" />
-            <input
-              type="text"
-              placeholder="Search user..."
-              className="bg-transparent outline-none w-full"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-          </div>
-
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setIsUpdating(false);
-              setCurrentUser(null);
-            }}
-            className="bg-[#146C94] text-white py-2 px-4 rounded-md"
-          >
-            Create User
-          </button>
-        </div>
-
-        {/* Create/Update Form */}
-        {showForm && (
-          <UserForm
-            onSubmit={handleSubmitForm}
-            onCancel={() => setShowForm(false)}
-            userData={isUpdating ? currentUser : {}}
-          />
-        )}
-
-        <h3 className="text-xl mb-3 font-semibold">
-          Total: {allUsers.length} users
-        </h3>
-
-        {/* Table */}
-        {loading ? (
-          <div className="flex justify-center items-center h-[40vh]">
-            <Spinner message="Fetching users..." />
-          </div>
-        ) : (
-          <>
-            <UsersTable users={paginatedUsers} />
-
-            {/* Pagination */}
-            <div className="flex justify-end items-center mt-4 gap-3">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-                className="px-3 py-1 border rounded-md disabled:opacity-50"
-              >
-                Prev
-              </button>
-              {[...Array(totalPages).keys()].map((i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded-md ${
-                    currentPage === i + 1
-                      ? "bg-[#146C94] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="px-3 py-1 border rounded-md disabled:opacity-50"
-              >
-                Next
-              </button>
+          {/* Search and Create */}
+          <div className="mt-6 mb-4 flex justify-between items-center">
+            <div className="flex items-center bg-gray-200 px-3 py-2 rounded-md w-1/3">
+              <AiOutlineSearch className="text-lg mr-2" />
+              <input
+                type="text"
+                placeholder="Search user..."
+                className="bg-transparent outline-none w-full"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
             </div>
-          </>
-        )}
 
-        {/* Delete Confirmation Modal */}
-        {deleteModal.show && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
-              <h2 className="text-lg font-semibold mb-3">
-                Confirm Delete User
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Are you sure you want to delete user ?
-              </p>
-              <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setIsUpdating(false);
+                setCurrentUser(null);
+              }}
+              className="bg-[#146C94] text-white py-2 px-4 rounded-md"
+            >
+              Create User
+            </button>
+          </div>
+
+          {/* Create/Update Form */}
+          {showForm && (
+            <UserForm
+              onSubmit={handleSubmitForm}
+              onCancel={() => setShowForm(false)}
+              userData={isUpdating ? currentUser : {}}
+            />
+          )}
+
+          <h3 className="text-xl mb-3 font-semibold">
+            Total: {allUsers.length} users
+          </h3>
+
+          {/* Table */}
+          {loading ? (
+            <div className="flex justify-center items-center h-[40vh]">
+              <Spinner message="Fetching users..." />
+            </div>
+          ) : (
+            <>
+              <UsersTable users={paginatedUsers} />
+
+              {/* Pagination */}
+              <div className="flex justify-end items-center mt-4 gap-3">
                 <button
-                  className="px-4 py-2 bg-gray-300 rounded-md"
-                  onClick={() => setDeleteModal({ show: false, user: null })}
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="px-3 py-1 border rounded-md disabled:opacity-50"
                 >
-                  Cancel
+                  Prev
                 </button>
+                {[...Array(totalPages).keys()].map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 border rounded-md ${
+                      currentPage === i + 1
+                        ? "bg-[#146C94] text-white"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
                 <button
-                  className="px-4 py-2 bg-red-600 text-white rounded-md"
-                  onClick={handleDeleteUser}
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="px-3 py-1 border rounded-md disabled:opacity-50"
                 >
-                  Delete
+                  Next
                 </button>
               </div>
+            </>
+          )}
+
+          {/* Delete Confirmation Modal */}
+          {deleteModal.show && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-sm">
+                <h2 className="text-lg font-semibold mb-3">
+                  Confirm Delete User
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Are you sure you want to delete user ?
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded-md"
+                    onClick={() => setDeleteModal({ show: false, user: null })}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-600 text-white rounded-md"
+                    onClick={handleDeleteUser}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
