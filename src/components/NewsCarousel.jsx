@@ -6,6 +6,8 @@ import {
   FaCalendar,
   FaLink,
   FaHashtag,
+  FaTimes,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import axios from "../axios";
 import { Link } from "react-router-dom";
@@ -16,6 +18,7 @@ const NewsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState({});
+  const [selectedNews, setSelectedNews] = useState(null);
   const autoPlayRef = useRef(null);
 
   const AUTO_PLAY_DELAY = 10000;
@@ -209,8 +212,17 @@ const NewsCarousel = () => {
               </h2>
 
               {/* CONTENT */}
-              <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
-                {news[currentIndex].body}
+              <p className="text-gray-600 mb-4 flex-grow">
+                {news[currentIndex].body.length > 120
+                  ? news[currentIndex].body.substring(0, 120) + "..."
+                  : news[currentIndex].body}{" "}
+                {/* READ MORE BUTTON */}
+                <button
+                  onClick={() => setSelectedNews(news[currentIndex])}
+                  className="text-[#0067b8] font-semibold hover:text-[#005599] hover:underline mb-4 text-left"
+                >
+                  Read More
+                </button>
               </p>
 
               {/* FOOTER */}
@@ -260,6 +272,121 @@ const NewsCarousel = () => {
           ))}
         </div>
       </div>
+
+      {/* NEWS DETAIL MODAL */}
+      <AnimatePresence>
+        {selectedNews && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSelectedNews(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              {/* Modal Header with Image */}
+              <div className="relative h-64 w-full bg-gray-100">
+                <img
+                  src={getImageUrl(selectedNews)}
+                  alt={selectedNews.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedNews(null)}
+                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                >
+                  <FaTimes size={20} />
+                </button>
+
+                {/* Title Overlay */}
+                {/* <div className="absolute bottom-0 left-0 right-0 p-6">
+                  
+                </div> */}
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                {/* Organization Info */}
+                <div className="flex items-center mb-6 pb-4 border-b">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+                      {selectedNews.title}
+                    </h2>
+
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap items-center gap-4 text-black">
+                      <div className="flex items-center">
+                        <FaCalendar className="mr-2" size={14} />
+                        <span className="text-sm">
+                          {formatDate(selectedNews.publishedAt)}
+                        </span>
+                      </div>
+
+                      {selectedNews.hashtags?.length > 0 && (
+                        <div className="flex items-center ">
+                          {/* <FaHashtag className="mr-2" size={14} /> */}
+                          {selectedNews.hashtags.slice(0, 5).map((tag, i) => (
+                            <span key={i} className="text-sm mr-2">
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <p className="text-lg font-semibold text-gray-900 mt-2">
+                      Posted by:{" "}
+                      {selectedNews.createdBy?.organizationName ||
+                        "Unknown Organization"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Full Content */}
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedNews.body}
+                  </p>
+                </div>
+
+                {/* External Link if available */}
+                {selectedNews.externalLink && (
+                  <div className="mt-6 pt-4 border-t">
+                    <a
+                      href={selectedNews.externalLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-[#0067b8] hover:text-[#005599] font-semibold"
+                    >
+                      Read original article
+                      <FaExternalLinkAlt className="ml-2" size={14} />
+                    </a>
+                  </div>
+                )}
+
+                {/* Footer Actions */}
+                <div className="mt-6 pt-4 border-t flex justify-end">
+                  <button
+                    onClick={() => setSelectedNews(null)}
+                    className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

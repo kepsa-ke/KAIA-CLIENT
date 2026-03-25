@@ -273,7 +273,7 @@ const AdminMembers = () => {
             "Category",
             "Contact Email",
             "Website Link",
-            "Approved",
+            "Current Status",
             "Applied",
             "Actions",
           ].map((h) => (
@@ -286,7 +286,11 @@ const AdminMembers = () => {
       <tbody>
         {data.map((m) => (
           <tr key={m._id} className="even:bg-gray-50 hover:bg-gray-100">
-            <td className="p-2 border-r">{m.organizationName}</td>
+            <td className="p-2 border-r">
+              {m.organizationName.length > 30
+                ? m.organizationName.slice(0, 30) + "..."
+                : m.organizationName || "N/A"}
+            </td>
             <td className="p-2 border-r">{m.firstName}</td>
             <td className="p-2 border-r">{m.surName}</td>
             <td className="p-2 border-r">{m.category || "Not indicated"}</td>
@@ -302,7 +306,9 @@ const AdminMembers = () => {
                 rel="noopener noreferrer"
                 className="text-blue-600 underline"
               >
-                {m.website}
+                {m.website.length > 30
+                  ? m.website.slice(0, 30) + "..."
+                  : m.website || "N/A"}
               </a>
             </td>
 

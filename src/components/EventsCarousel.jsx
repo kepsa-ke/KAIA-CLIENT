@@ -13,9 +13,21 @@ import {
   FaGlobe,
   FaEnvelope,
   FaPhone,
+  FaEye,
+  FaTimes,
 } from "react-icons/fa";
+import {
+  AiOutlineLink,
+  AiOutlineClose,
+  AiOutlineCalendar,
+} from "react-icons/ai";
+import { BiTime } from "react-icons/bi";
+import { GrLocation } from "react-icons/gr";
+import { TfiLocationPin } from "react-icons/tfi";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "../axios";
+import moment from "moment";
 
 const EventsCarousel = () => {
   const [events, setEvents] = useState([]);
@@ -23,6 +35,7 @@ const EventsCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState({});
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const autoPlayRef = useRef(null);
 
   const AUTO_PLAY_DELAY = 10000;
@@ -148,6 +161,10 @@ const EventsCarousel = () => {
   const getDaysUntil = (date) => {
     const diff = new Date(date) - new Date();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
+  const isEventActive = (event) => {
+    return event.eventStatus !== "past" && event.eventStatus !== "cancelled";
   };
 
   const variants = {
@@ -282,10 +299,21 @@ const EventsCarousel = () => {
                 {currentEvent.title}
               </h2>
 
-              {/* Description */}
-              <p className="text-gray-600 mb-6 line-clamp-2">
-                {currentEvent.description}
-              </p>
+              <div className="mb-8">
+                {/* Description - Truncated */}
+                <p className="text-gray-600 ">
+                  {currentEvent.description.length > 150
+                    ? currentEvent.description.substring(0, 150) + "..."
+                    : currentEvent.description}{" "}
+                  {/* Read More Button */}
+                  <button
+                    onClick={() => setSelectedEvent(currentEvent)}
+                    className="text-[#0067b8] font-semibold hover:text-[#005599] hover:underline text-left"
+                  >
+                    Read More
+                  </button>
+                </p>
+              </div>
 
               {/* Event Details Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -452,7 +480,330 @@ const EventsCarousel = () => {
           ))}
         </div>
       </div>
+
+      {/* Event Modal */}
+      <EventModal
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        formatDate={formatEventDate}
+      />
     </div>
+  );
+};
+
+// Event Status Badge Component
+const EventStatusBadge = ({ status }) => {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "ongoing":
+        return "bg-green-500";
+      case "upcoming":
+        return "bg-blue-500";
+      case "past":
+        return "bg-gray-400";
+      case "cancelled":
+        return "bg-red-500";
+      default:
+        return "bg-gray-400";
+    }
+  };
+
+  return (
+    <span
+      className={`${getStatusColor(status)} px-3 py-1 rounded-full text-white text-xs font-medium`}
+    >
+      {status?.charAt(0).toUpperCase() + status?.slice(1)}
+    </span>
+  );
+};
+
+// Event Type Badge Component
+const EventTypeBadge = ({ type }) => {
+  const getEventTypeIcon = (type) => {
+    switch (type?.toLowerCase()) {
+      case "online":
+        return <FaVideo />;
+      case "in-person":
+        return <FaUserFriends />;
+      case "hybrid":
+        return <FaGlobe />;
+      default:
+        return <FaCalendar />;
+    }
+  };
+
+  return (
+    <span className="flex items-center gap-2 text-sm text-[#0067b8]">
+      {getEventTypeIcon(type)}
+      <span>{type}</span>
+    </span>
+  );
+};
+
+// Event Modal Component
+const EventModal = ({ event, onClose, formatDate }) => {
+  if (!event) return null;
+
+  // Track click when modal is opened
+  useEffect(() => {
+    const trackClick = async () => {
+      try {
+        await axios.post(`/events/${event._id}/click`);
+      } catch (error) {
+        console.error("Error tracking click:", error);
+      }
+    };
+    trackClick();
+  }, [event._id]);
+
+  const isEventActive = () => {
+    return event.eventStatus !== "past" && event.eventStatus !== "cancelled";
+  };
+
+  return (
+    <AnimatePresence>
+      {event && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 left-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition z-10"
+            >
+              <AiOutlineClose size={20} />
+            </button>
+
+            {/* Image */}
+            {event.image && (
+              <div className="relative h-64 md:h-96 bg-gray-100">
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://via.placeholder.com/800x400?text=Event+Image";
+                  }}
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                {/* Status Badge Overlay */}
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <EventStatusBadge status={event.eventStatus} />
+                </div>
+              </div>
+            )}
+
+            {/* Content */}
+            <div className="p-6">
+              {/* Organizer Info */}
+              <div className="flex items-center gap-2 mb-4 pb-4 border-b">
+                <div>
+                  {/* Title Overlay */}
+                  <div className="mb-4">
+                    <h2 className="text-2xl md:text-4xl font-bold text-black mb-2">
+                      {event.title}
+                    </h2>
+                  </div>
+                  <p className="text-xs text-gray-500">Organized by</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {event.createdBy?.organizationName ||
+                      "Unknown Organization"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Event Type and Date Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <EventTypeBadge type={event.eventType} />
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <FaRegCalendarAlt />
+                    <span>{formatDate(event)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <BiTime className="text-gray-500" size={18} />
+                  <span className="text-sm text-gray-600">
+                    {moment(event.startDate).format("HH:mm")} -{" "}
+                    {moment(event.endDate).format("HH:mm")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-6">
+                <h3 className="font-semibold mb-2 text-lg">About This Event</h3>
+                <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {event.description}
+                </p>
+              </div>
+
+              {/* Location Details */}
+              {event.eventType !== "online" && event.location && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-2 text-lg">Location</h3>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    {event.location.venue && (
+                      <p className="font-medium flex items-center gap-2">
+                        <GrLocation className="text-gray-500" />
+                        {event.location.venue}
+                      </p>
+                    )}
+                    <p className="text-gray-600 mt-1 flex items-center gap-2">
+                      <TfiLocationPin className="text-gray-500" />
+                      {[
+                        event.location.address,
+                        event.location.city,
+                        event.location.country,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Online/Hybrid Links - Only show if event is active and has meeting link */}
+              {(event.eventType === "online" || event.eventType === "hybrid") &&
+                event.meetingLink &&
+                isEventActive() && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold mb-2 text-lg">Join Online</h3>
+                    <a
+                      href={event.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#0067b8] text-white rounded-lg hover:bg-[#005599] transition-colors font-medium"
+                    >
+                      <FaVideo />
+                      Acess Details
+                    </a>
+                  </div>
+                )}
+
+              {/* Show message for past events with meeting links */}
+              {(event.eventType === "online" || event.eventType === "hybrid") &&
+                event.meetingLink &&
+                !isEventActive() && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold mb-2 text-lg">
+                      Meeting Information
+                    </h3>
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <p className="text-gray-600">
+                        This event has{" "}
+                        {event.eventStatus === "past"
+                          ? "ended"
+                          : "been cancelled"}
+                        . The meeting link is no longer available.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+              {/* Contact Info */}
+              {(event.contactEmail || event.contactPhone) && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-2 text-lg">
+                    Contact Information
+                  </h3>
+                  <div className="space-y-2">
+                    {event.contactEmail && (
+                      <a
+                        href={`mailto:${event.contactEmail}`}
+                        className="flex items-center gap-2 text-[#0067b8] hover:underline"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        {event.contactEmail}
+                      </a>
+                    )}
+                    {event.contactPhone && (
+                      <a
+                        href={`tel:${event.contactPhone}`}
+                        className="flex items-center gap-2 text-[#0067b8] hover:underline"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                        {event.contactPhone}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* External Event Link */}
+              {event.eventLink && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-2 text-lg">
+                    More Information
+                  </h3>
+                  <a
+                    href={event.eventLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#0067b8] hover:underline"
+                  >
+                    <AiOutlineLink />
+                    Visit Event Page
+                  </a>
+                </div>
+              )}
+
+              {/* Hashtags */}
+              {event.hashtags && event.hashtags.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-2 text-lg">Hashtags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {event.hashtags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 rounded-full text-sm"
+                        style={{ backgroundColor: "#e6f0fa", color: "#0067b8" }}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Views Counter */}
+              <div className="flex items-center gap-2 text-sm text-gray-500 border-t pt-4">
+                <FaEye />
+                <span>{event.clicks || 0} people have viewed this event</span>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

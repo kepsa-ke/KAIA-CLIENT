@@ -268,7 +268,6 @@ const MembershipForm = () => {
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option value="">Choose</option>
-                  <option value="consumer">AI Consumer</option>
                   <option value="trainer">AI Trainer</option>
                   <option value="partner">AI Partner</option>
                 </select>
