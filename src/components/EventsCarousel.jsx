@@ -333,7 +333,7 @@ const EventsCarousel = () => {
                 </div>
 
                 {/* Location */}
-                {currentEvent.location && (
+                {currentEvent.eventType !== "online" && (
                   <div className="flex items-start space-x-3">
                     <div className="text-[#0067b8] mt-1">
                       <FaMapMarkerAlt size={18} />
@@ -342,6 +342,7 @@ const EventsCarousel = () => {
                       <p className="text-xs text-gray-500 uppercase tracking-wider">
                         Location
                       </p>
+
                       <p className="text-sm font-medium">
                         {currentEvent.location.venue &&
                           `${currentEvent.location.venue}, `}

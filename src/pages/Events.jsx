@@ -203,32 +203,34 @@ const EventModal = ({ event, onClose, formatDate }) => {
             </div>
           )}
 
-          {/* Online/Hybrid Links */}
+          {/* Show message for past events with meeting links */}
           {(event.eventType === "online" || event.eventType === "hybrid") &&
             event.meetingLink && (
               <div className="mb-6">
-                <h3 className="font-semibold mb-2">Join Online</h3>
-                <a
-                  href={event.meetingLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                >
-                  <FaVideo />
-                  Join Meeting
-                </a>
+                <h3 className="font-semibold mb-2 text-lg">
+                  Meeting Information
+                </h3>
+                <div className="bg-gray-100 p-4 rounded-lg">
+                  <p className="text-gray-600">
+                    This event has{" "}
+                    {event.eventStatus === "past" ? "ended" : "been cancelled"}.
+                    The meeting link is no longer available.
+                  </p>
+                </div>
               </div>
             )}
 
           {/* Contact Info */}
           {(event.contactEmail || event.contactPhone) && (
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Contact Information</h3>
+              <h3 className="font-semibold mb-2 text-lg">
+                Contact Information
+              </h3>
               <div className="space-y-2">
                 {event.contactEmail && (
                   <a
                     href={`mailto:${event.contactEmail}`}
-                    className="flex items-center gap-2 text-blue-600 hover:underline"
+                    className="flex items-center gap-2 text-[#0067b8] hover:underline"
                   >
                     <svg
                       className="w-4 h-4"
@@ -244,7 +246,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 {event.contactPhone && (
                   <a
                     href={`tel:${event.contactPhone}`}
-                    className="flex items-center gap-2 text-blue-600 hover:underline"
+                    className="flex items-center gap-2 text-[#0067b8] hover:underline"
                   >
                     <svg
                       className="w-4 h-4"
