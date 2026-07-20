@@ -102,43 +102,46 @@ const AimedAt = () => {
   ];
 
   return (
-    <section className="relative w-full min-h-screen md:min-h-[75vh] flex items-center justify-center overflow-hidden">
-      {/* background image */}
-      <img
-        src={BackImg}
-        alt="Background"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-
-      {/* overlay */}
-      <div className="absolute inset-0 bg-[#0067b8]/90" />
-
+    <div>
       {/* content */}
-      <div className="relative z-10 w-full max-w-6xl px-4 sm:px-6 lg:px-10 py-12 text-white flex flex-col items-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4">
+      <div className=" ">
+        <h2
+          className="text-[#1b12e8] text-[16px] mb-4 font-bold uppercase"
+          style={{
+            lineHeight: "1.4em",
+            fontFamily: "IBM Plex Mono, monospace",
+            letterSpacing: "0.12em",
+          }}
+        >
           Who can join
         </h2>
 
-        <p className="text-center text-sm sm:text-base md:text-lg mb-6 max-w-2xl leading-relaxed">
+        <p
+          className=" mb-[2em] text-[#0A0A1F] text-[20px] font-semibold md:max-w-2xl"
+          style={{
+            lineHeight: "1.4em",
+            fontFamily: "Space Grotesk, sans-serif",
+          }}
+        >
           The Alliance is open to all organizations and individuals committed to
           advancing AI skills and opportunities in Kenya.
         </p>
 
         {/* platform-wide benefits badges */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        <div className="flex flex-wrap  gap-3 mb-10">
           {platformBenefits.map((benefit, index) => (
             <div
               key={index}
               className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 text-sm"
             >
-              <span className="text-white">{benefit.icon}</span>
+              <span className=" text-[#E0A200]">{benefit.icon}</span>
               <span>{benefit.text}</span>
             </div>
           ))}
         </div>
 
         {/* stakeholders with value propositions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full ">
           {stakeholders.map((item) => (
             <div
               key={item.id}
@@ -150,9 +153,14 @@ const AimedAt = () => {
               // }
             >
               <div className="flex items-start gap-3">
-                <div className="text-2xl flex-shrink-0 mt-1">{item.icon}</div>
+                <div className="text-2xl flex-shrink-0 mt-1 text-[#1b12e8]">
+                  {item.icon}
+                </div>
                 <div className="flex-1">
-                  <p className="text-base sm:text-lg font-medium leading-relaxed mb-2">
+                  <p
+                    className="text-base sm:text-lg font-medium leading-relaxed mb-2"
+                    style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                  >
                     {item.title}
                   </p>
 
@@ -162,7 +170,7 @@ const AimedAt = () => {
                       {item.valueProps.map((prop, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-2 text-sm text-white/90"
+                          className="flex items-start gap-2 text-sm text-black/90"
                         >
                           <span className="text-yellow-300 mt-1">•</span>
                           <span>{prop}</span>
@@ -175,7 +183,7 @@ const AimedAt = () => {
                     {item.valueProps.map((prop, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2 text-sm text-white/90"
+                        className="flex items-start gap-2 text-sm text-black/90"
                       >
                         <span className="text-yellow-300 mt-1">•</span>
                         <span>{prop}</span>
@@ -189,7 +197,7 @@ const AimedAt = () => {
         </div>
 
         {/* job seekers callout */}
-        <div className="mt-8 bg-white/20 backdrop-blur-sm rounded-lg p-4 max-w-2xl w-full text-center">
+        <div className="mt-8  p-4 ">
           <p className="text-base sm:text-lg">
             <span className="font-semibold">Job seekers?</span> Browse
             opportunities from KAISA members and launch your AI career.
@@ -201,17 +209,8 @@ const AimedAt = () => {
             </Link>
           </p>
         </div>
-
-        {/* button */}
-        <div className="mt-8">
-          <Link to="/membership">
-            <button className="bg-gray-100 text-[#0067b8] px-8 py-3 rounded-md font-medium hover:bg-white transition transform hover:scale-105 duration-200">
-              Become a Member Today
-            </button>
-          </Link>
-        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

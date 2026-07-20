@@ -147,7 +147,7 @@ const Login = () => {
                 ) : (
                   <button
                     type="submit"
-                    className="bg-[#0067b8] text-white py-2 px-4 rounded-md hover:text-zinc-300 transition duration-300 cursor-pointer"
+                    className="bg-[#1B12E8] text-white py-2 px-4 rounded-md hover:text-zinc-300 transition duration-300 cursor-pointer"
                     onClick={handleSignin}
                   >
                     Sign In
@@ -157,7 +157,7 @@ const Login = () => {
                 <div className="mt-4">
                   <Link
                     to="/password-reset"
-                    className="text-[#0067b8] underline"
+                    className="text-[#1B12E8] underline"
                   >
                     Forgot Password?
                   </Link>

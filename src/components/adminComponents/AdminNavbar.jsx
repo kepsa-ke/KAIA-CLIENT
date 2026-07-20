@@ -80,6 +80,12 @@ const AdminNavbar = () => {
           goTo: "/admin-partners",
           icon: AiOutlinePartition,
         },
+        {
+          id: 13,
+          title: "Courses",
+          goTo: "/admin-courses",
+          icon: AiOutlineBook,
+        },
         { id: 6, title: "News", goTo: "/admin-news", icon: AiOutlineFileText },
         {
           id: 7,
@@ -101,8 +107,8 @@ const AdminNavbar = () => {
         },
         {
           id: 10,
-          title: "Training Partners",
-          goTo: "/admin-training-partners",
+          title: "Insights",
+          goTo: "/admin-insights",
           icon: AiFillBehanceCircle,
         },
         {
@@ -152,16 +158,29 @@ const AdminNavbar = () => {
           goTo: "/leaders-jobs",
           icon: AiFillWechatWork,
         },
-
         {
           id: 7,
-          title: "Training Partner",
-          goTo: "/leaders-training-partners",
-          icon: AiFillBehanceCircle,
+          title: "Insights",
+          goTo: "/leaders-insights",
+          icon: AiFillWechatWork,
         },
+
+        // {
+        //   id: 7,
+        //   title: "Training Partner",
+        //   goTo: "/leaders-training-partners",
+        //   icon: AiFillBehanceCircle,
+        // },
 
         {
           id: 8,
+          title: "Advertise Courses",
+          goTo: "/leaders-courses",
+          icon: AiOutlineBook,
+        },
+
+        {
+          id: 9,
           title: "Statistics",
           goTo: "/leaders-stats",
           icon: AiOutlineBarChart,

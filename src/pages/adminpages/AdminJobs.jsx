@@ -813,7 +813,7 @@ const AdminJobs = () => {
                   <span className="text-xs">...</span>
                 ) : (
                   <>
-                    {item.published ? (
+                    {!item.published ? (
                       <MdOutlineCancel
                         size={18}
                         className="text-orange-500 cursor-pointer hover:scale-110"

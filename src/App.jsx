@@ -33,6 +33,17 @@ import AdminReports from "./pages/adminpages/AdminReports";
 import AdminTrainingPartners from "./pages/adminpages/AdminTrainingPartners";
 import LeadersTrainingPartner from "./pages/leaderspages/LeadersTrainingPartner";
 import TrainingPartners from "./pages/TrainingPartners";
+import LeadersCourses from "./pages/leaderspages/LeadersCourses";
+import Courses from "./pages/Courses";
+import WhyJoinAlliance from "./pages/aboutUs/WhyJoinAlliance";
+import WhoCanJoin from "./pages/aboutUs/WhoCanJoin";
+import AboutPrinciples from "./pages/aboutUs/Principles";
+import Membership from "./pages/CompleteMembersPage";
+import LeadersInsight from "./pages/leaderspages/LeadersInsight";
+import AdminInsights from "./pages/adminpages/AdminInsights";
+import Insights from "./pages/Insights";
+import ConsolidatedAboutPage from "./pages/ConsolidatedAboutPage";
+import KAISACommitteesPage from "./pages/aboutUs/KAISACommiteesPage";
 
 function App() {
   return (
@@ -40,16 +51,24 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/membership" element={<MembershipForm />} />
+          <Route path="/membership" element={<Membership />} />
           <Route path="/learning" element={<Learning />} />
           <Route path="/training-partners" element={<TrainingPartners />} />
           <Route path="/news" element={<News />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/learn" element={<Courses />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/password-reset" element={<ResetPassword />} />
+          <Route path="/why-join-alliance" element={<WhyJoinAlliance />} />
+          <Route path="/who-can-join" element={<WhoCanJoin />} />
+          <Route path="/guiding-principles" element={<AboutPrinciples />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/about" element={<ConsolidatedAboutPage />} />
+          <Route path="/about-committees" element={<KAISACommitteesPage />} />
+
           {/* admin pages */}
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-users" element={<AdminUsers />} />
@@ -62,6 +81,7 @@ function App() {
           <Route path="/admin-blogs" element={<AdminBlogs />} />
           <Route path="/admin-events" element={<AdminEvents />} />
           <Route path="/admin-jobs" element={<AdminJobs />} />
+          <Route path="/admin-insights" element={<AdminInsights />} />
           <Route
             path="/admin-training-partners"
             element={<AdminTrainingPartners />}
@@ -74,10 +94,12 @@ function App() {
           <Route path="/leaders-blogs" element={<LeadersBlogs />} />
           <Route path="/leaders-events" element={<LeadersEvents />} />
           <Route path="/leaders-jobs" element={<LeadersJobs />} />
-          <Route
+          <Route path="/leaders-courses" element={<LeadersCourses />} />
+          <Route path="/leaders-insights" element={<LeadersInsight />} />
+          {/* <Route
             path="/leaders-training-partners"
             element={<LeadersTrainingPartner />}
-          />
+          /> */}
         </Routes>
       </BrowserRouter>
       <ToastContainer />

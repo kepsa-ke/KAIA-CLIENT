@@ -244,14 +244,19 @@ const ImpactOverview = () => {
 
   return (
     // <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-    <div className="">
+    <div className="px-[2em]  xl:px-[5em] mt-[2em]">
       {/* Hero Section */}
       <div className=" py-12 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4 text-center"
+            className="text-[#1b12e8] text-[16px] mb-4 font-bold uppercase"
+            style={{
+              lineHeight: "1.4em",
+              fontFamily: "IBM Plex Mono, monospace",
+              letterSpacing: "0.12em",
+            }}
           >
             Our Collective Impact
           </motion.h1>
@@ -259,7 +264,11 @@ const ImpactOverview = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl text-center  max-w-3xl mx-auto"
+            className=" mb-[2em] text-[#0A0A1F] text-[30px] font-semibold md:max-w-2xl"
+            style={{
+              lineHeight: "1.4em",
+              fontFamily: "Space Grotesk, sans-serif",
+            }}
           >
             Together, we're transforming lives and organizations through
             measurable impact
@@ -267,7 +276,7 @@ const ImpactOverview = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className=" px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
         {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -328,7 +337,7 @@ const ImpactOverview = () => {
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#0067b8] border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#1B12E8] border-t-transparent"></div>
           </div>
         ) : (
           <>
@@ -363,9 +372,9 @@ const ImpactOverview = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ y: -4 }}
-                    className="bg-white shadow-lg rounded-xl p-4 text-center border-b-4 border-[#0067b8]"
+                    className="bg-white shadow-lg rounded-xl p-4 text-center border-b-4 border-[#1B12E8]"
                   >
-                    <div className="text-[#0067b8] mb-4 flex justify-center">
+                    <div className="text-[#1B12E8] mb-4 flex justify-center">
                       {icons[key] || <FaChartLine className="w-6 h-6" />}
                     </div>
                     <p className="text-sm text-gray-500 capitalize mb-2">

@@ -29,7 +29,8 @@ import { GrLocation } from "react-icons/gr";
 import moment from "moment";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Navbar from "../components/Navbar";
-
+import Footer from "../components/Footer";
+import YouTube from "react-youtube";
 // Event Type Badge Component
 const EventTypeBadge = ({ type }) => {
   const typeConfig = {
@@ -70,7 +71,7 @@ const EventTypeBadge = ({ type }) => {
 // Event Status Badge Component
 const EventStatusBadge = ({ status }) => {
   const statusConfig = {
-    upcoming: { bg: "#e6f0fa", text: "#0067b8", label: "Upcoming" },
+    upcoming: { bg: "#e6f0fa", text: "#1B12E8", label: "Upcoming" },
     ongoing: { bg: "#e0f2e9", text: "#0b5e42", label: "Ongoing" },
     past: { bg: "#fee2e2", text: "#991b1b", label: "Past" },
   };
@@ -90,6 +91,63 @@ const EventStatusBadge = ({ status }) => {
 // Event Modal Component
 const EventModal = ({ event, onClose, formatDate }) => {
   if (!event) return null;
+
+  // Helper to extract video ID from YouTube URL
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    return match ? match[1] : null;
+  };
+
+  // Helper to check if URL is a YouTube link
+  const isYouTubeLink = (url) => {
+    return getYouTubeVideoId(url) !== null;
+  };
+
+  // Video Player Component
+  // Video Player Component
+  const VideoPlayer = ({ url }) => {
+    const [isEnlarged, setIsEnlarged] = useState(false);
+    const videoId = getYouTubeVideoId(url);
+
+    if (!videoId) return null;
+
+    const opts = {
+      height: isEnlarged ? "500" : "315",
+      width: "100%",
+      playerVars: {
+        autoplay: 0,
+        rel: 0,
+      },
+    };
+
+    return (
+      <div className="mb-4">
+        <div
+          className={
+            isEnlarged
+              ? "fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+              : ""
+          }
+        >
+          <div className={isEnlarged ? "w-full max-w-4xl" : "w-full max-w-2xl"}>
+            <YouTube
+              videoId={videoId}
+              opts={opts}
+              className={isEnlarged ? "w-full" : ""}
+            />
+
+            <button
+              onClick={() => setIsEnlarged(!isEnlarged)}
+              className="mt-3 px-4 py-2 bg-[#1B12E8] text-white rounded-lg hover:bg-[#150FA0] transition-colors text-sm"
+            >
+              {isEnlarged ? "Close" : "Enlarge"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Track click when modal is opened
   useEffect(() => {
@@ -137,7 +195,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
           {/* Title */}
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
-            style={{ color: "#0067b8" }}
+            style={{ color: "#1B12E8" }}
           >
             {event.title}
           </h2>
@@ -207,16 +265,53 @@ const EventModal = ({ event, onClose, formatDate }) => {
           {(event.eventType === "online" || event.eventType === "hybrid") &&
             event.meetingLink && (
               <div className="mb-6">
-                <h3 className="font-semibold mb-2 text-lg">
-                  Meeting Information
-                </h3>
-                <div className="bg-gray-100 p-4 rounded-lg">
+                {/* <div className="bg-gray-100 p-4 rounded-lg">
                   <p className="text-gray-600">
                     This event has{" "}
                     {event.eventStatus === "past" ? "ended" : "been cancelled"}.
                     The meeting link is no longer available.
                   </p>
-                </div>
+                </div> */}
+
+                <h3 className="font-semibold mb-2 text-lg">
+                  Meeting Information
+                </h3>
+                {event.eventStatus === "past" ||
+                event.eventStatus === "ended" ? (
+                  <p className="py-3 text-red-500">Event Ended</p>
+                ) : (
+                  <p></p>
+                )}
+
+                {/* <a
+                  href={event.meetingLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#1B12E8] hover:underline"
+                >
+                  Access Link
+                </a> */}
+
+                {event.meetingLink?.includes("youtube.com") ||
+                event.meetingLink?.includes("youtu.be") ? (
+                  <VideoPlayer url={event.meetingLink} />
+                ) : (
+                  <a
+                    href={event.meetingLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1B12E8] hover:underline"
+                  >
+                    Access Link
+                  </a>
+                )}
+                {/* <div className="bg-gray-100 p-4 rounded-lg">
+                  <p className="text-gray-600">
+                    This event has{" "}
+                    {event.eventStatus === "past" ? "ended" : "been cancelled"}.
+                    The meeting link is no longer available.
+                  </p>
+                </div> */}
               </div>
             )}
 
@@ -230,7 +325,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 {event.contactEmail && (
                   <a
                     href={`mailto:${event.contactEmail}`}
-                    className="flex items-center gap-2 text-[#0067b8] hover:underline"
+                    className="flex items-center gap-2 text-[#1B12E8] hover:underline"
                   >
                     <svg
                       className="w-4 h-4"
@@ -246,7 +341,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 {event.contactPhone && (
                   <a
                     href={`tel:${event.contactPhone}`}
-                    className="flex items-center gap-2 text-[#0067b8] hover:underline"
+                    className="flex items-center gap-2 text-[#1B12E8] hover:underline"
                   >
                     <svg
                       className="w-4 h-4"
@@ -287,7 +382,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                   <span
                     key={i}
                     className="px-3 py-1 rounded-full text-sm"
-                    style={{ backgroundColor: "#e6f0fa", color: "#0067b8" }}
+                    style={{ backgroundColor: "#e6f0fa", color: "#1B12E8" }}
                   >
                     #{tag}
                   </span>
@@ -334,7 +429,7 @@ const EventCard = ({ item, onClick, formatDate }) => {
           <img
             src={item.image}
             alt={item.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src =
@@ -363,7 +458,7 @@ const EventCard = ({ item, onClick, formatDate }) => {
         {/* Title */}
         <h3
           className="text-lg font-semibold mb-2 line-clamp-2"
-          style={{ color: "#0067b8" }}
+          style={{ color: "#1B12E8" }}
         >
           {item.title.length > 50
             ? `${item.title.substring(0, 50)}...`
@@ -414,7 +509,7 @@ const EventCard = ({ item, onClick, formatDate }) => {
               <span
                 key={i}
                 className="text-xs px-2 py-1 rounded-full"
-                style={{ backgroundColor: "#e6f0fa", color: "#0067b8" }}
+                style={{ backgroundColor: "#e6f0fa", color: "#1B12E8" }}
               >
                 #{tag}
               </span>
@@ -607,11 +702,11 @@ const Events = () => {
       <Navbar />
 
       {/* Header */}
-      <div className="bg-white  shadow-sm mt-[3em] mb-[3em]">
+      <div className="bg-white  shadow-sm mt-[3em] mb-[3em]  px-4 lg:px-18">
         <div className="container mx-auto px-4 py-8">
           <h1
             className="text-3xl md:text-4xl font-bold mb-2 mt-[1em]"
-            style={{ color: "#0067b8" }}
+            style={{ color: "#1B12E8" }}
           >
             Events
           </h1>
@@ -845,6 +940,7 @@ const Events = () => {
           />
         )}
       </div>
+      <Footer />
     </div>
   );
 };

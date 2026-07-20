@@ -631,7 +631,7 @@ const AdminEvents = () => {
                   <span className="text-xs">...</span>
                 ) : (
                   <>
-                    {item.published ? (
+                    {!item.published ? (
                       <MdOutlineCancel
                         size={18}
                         className="text-orange-500 cursor-pointer hover:scale-110"
@@ -1295,9 +1295,18 @@ const AdminEvents = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto p-4">
               <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    {formModal.event ? "Edit Event" : "Create New Event"}
-                  </h2>
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold mb-4">
+                      {formModal.event ? "Edit Event" : "Create New Event"}
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => setFormModal({ show: false, event: null })}
+                      className="px-4 py-2 bg-orange-200 rounded-lg hover:bg-gray-300 transition cursor-pointer"
+                    >
+                      Close
+                    </button>
+                  </div>
                   <form onSubmit={handleSubmitForm} className="space-y-4">
                     {/* Image Upload */}
                     <div>

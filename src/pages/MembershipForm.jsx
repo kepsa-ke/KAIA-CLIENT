@@ -4,6 +4,8 @@ import axios from "../axios";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import { PiHandsClappingDuotone } from "react-icons/pi";
+import ImageUpload from "../components/common/ImageUpload"; // Import the ImageUpload component
+import { allCountiesKenya } from "../data";
 
 const MembershipForm = () => {
   const [firstName, setFirstName] = useState("");
@@ -15,8 +17,18 @@ const MembershipForm = () => {
   const [website, setWebsite] = useState("");
   const [category, setCategory] = useState("");
 
+  // New state variables for the added fields
+  const [companyLogo, setCompanyLogo] = useState("");
+  const [membershipType, setMembershipType] = useState("");
+  const [companyCounty, setCompanyCounty] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Handle logo upload
+  const handleLogoUpload = (imageUrl) => {
+    setCompanyLogo(imageUrl);
+  };
 
   const handleSendRequest = async (e) => {
     e.preventDefault();
@@ -29,7 +41,10 @@ const MembershipForm = () => {
         !phone ||
         !organizationName ||
         !website ||
-        !category
+        !category ||
+        !membershipType || // Added validation
+        !companyCounty || // Added validation
+        !companyLogo // Added validation - logo is required
       ) {
         toast.error("Please fill in all required fields");
         return;
@@ -44,6 +59,10 @@ const MembershipForm = () => {
         organizationName: organizationName.trim(),
         website: website.trim(),
         category: category.trim(),
+        // New fields
+        companyLogo: companyLogo.trim(),
+        membershipType: membershipType.trim(),
+        companyCounty: companyCounty.trim(),
       };
       const response = await axios.post("/members", dataToSend);
       if (response.data) {
@@ -58,12 +77,9 @@ const MembershipForm = () => {
       let errorMessage = "Failed to submit application";
 
       if (error.response?.data) {
-        // Use the backend error message if available
         errorMessage = error.response.data.message || errorMessage;
 
-        // You can also handle specific error cases
         if (error.response.status === 400) {
-          // Bad request - validation errors
           if (error.response.data.message?.includes("email")) {
             errorMessage = "Email address is already registered";
           } else if (error.response.data.message?.includes("organization")) {
@@ -98,13 +114,12 @@ const MembershipForm = () => {
           Membership is free and open to organizations, associations, and
           business networks.
         </p>
-        {/* <p className="text-gray-600 mb-8">Someone will reach out soon</p> */}
 
         <div>
           {submitted ? (
             <div>
               <div className="flex justify-center mb-8">
-                <PiHandsClappingDuotone className="text-center text-4xl text-[#0067b8]" />
+                <PiHandsClappingDuotone className="text-center text-4xl text-[#1B12E8]" />
               </div>
               <h2 className="text-center text-3xl mb-8">
                 Submitted Successfully
@@ -113,6 +128,26 @@ const MembershipForm = () => {
             </div>
           ) : (
             <form onSubmit={handleSendRequest}>
+              {/* Company Logo Upload */}
+              <div className="flex flex-col gap-2 mb-8">
+                <label className="font-semibold text-gray-600">
+                  Company Logo <span className="text-red-500">*</span>
+                </label>
+                <ImageUpload
+                  onImageUpload={handleLogoUpload}
+                  folder="member-logos" // Optional: organize logos in a separate folder
+                  buttonText="Upload Company Logo"
+                  acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
+                  maxSize={5}
+                  id="company-logo-upload"
+                />
+                {companyLogo && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✓ Logo uploaded successfully
+                  </p>
+                )}
+              </div>
+
               {/* company name */}
               <div className="flex flex-col gap-2 mb-8">
                 <label
@@ -250,6 +285,61 @@ const MembershipForm = () => {
                 />
               </div>
 
+              {/* Membership Type - New Field */}
+              <div className="flex flex-col gap-2 mb-8">
+                <label
+                  htmlFor="membershipType"
+                  className="font-semibold text-gray-600"
+                >
+                  Membership Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="membershipType"
+                  id="membershipType"
+                  className="border border-gray-400 p-2 rounded-md w-full"
+                  value={membershipType}
+                  onChange={(e) => setMembershipType(e.target.value)}
+                  required
+                >
+                  <option value="">Select Membership Type</option>
+                  <option value="government">Government</option>
+                  <option value="academia">
+                    Academia/Training institutions
+                  </option>
+                  <option value="developmentPartners">
+                    Development partners
+                  </option>
+                  <option value="civilSociety">Civil society</option>
+                  <option value="innovationHubs">Innovation hubs</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              {/* Company County - New Field */}
+              <div className="flex flex-col gap-2 mb-8">
+                <label
+                  htmlFor="companyCounty"
+                  className="font-semibold text-gray-600"
+                >
+                  Company County <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="companyCounty"
+                  id="companyCounty"
+                  className="border border-gray-400 p-2 rounded-md w-full"
+                  value={companyCounty}
+                  onChange={(e) => setCompanyCounty(e.target.value)}
+                  required
+                >
+                  <option value="">Select County</option>
+                  {allCountiesKenya.map((county) => (
+                    <option key={county} value={county.toLowerCase()}>
+                      {county}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* category */}
               <div className="flex flex-col gap-2 mb-8">
                 <label
@@ -266,10 +356,12 @@ const MembershipForm = () => {
                   className="border border-gray-400 p-2 rounded-md w-full"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
+                  required
                 >
                   <option value="">Choose</option>
                   <option value="trainer">AI Trainer</option>
                   <option value="partner">AI Partner</option>
+                  <option value="consumer">AI Consumer</option>
                 </select>
               </div>
 
@@ -280,8 +372,7 @@ const MembershipForm = () => {
               ) : (
                 <button
                   type="submit"
-                  className="bg-[#0067b8] text-white py-2 px-4 rounded-md hover:text-zinc-300 transition duration-300 cursor-pointer"
-                  onClick={handleSendRequest}
+                  className="bg-[#1B12E8] text-white py-2 px-4 rounded-md hover:text-zinc-300 transition duration-300 cursor-pointer"
                 >
                   Submit Application
                 </button>
@@ -289,7 +380,6 @@ const MembershipForm = () => {
             </form>
           )}
         </div>
-        {/*  */}
       </div>
     </div>
   );

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaCalendar,
-  FaLink,
-  FaHashtag,
   FaMapMarkerAlt,
   FaClock,
   FaVideo,
@@ -12,6 +10,7 @@ import {
   FaEnvelope,
   FaPhone,
   FaEye,
+  FaHashtag,
 } from "react-icons/fa";
 import {
   AiOutlineLink,
@@ -26,23 +25,23 @@ import { Link } from "react-router-dom";
 import axios from "../axios";
 import moment from "moment";
 
-const EventsGrid = () => {
+const UpcomingEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   useEffect(() => {
-    fetchRecentEvents();
+    fetchUpcomingEvents();
   }, []);
 
-  const fetchRecentEvents = async () => {
+  const fetchUpcomingEvents = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/events/recent");
+      const res = await axios.get("/events/upcoming");
       setEvents(res.data.data);
     } catch (err) {
-      console.error("Error fetching events:", err);
+      console.error("Error fetching upcoming events:", err);
     } finally {
       setLoading(false);
     }
@@ -104,13 +103,18 @@ const EventsGrid = () => {
     })}`;
   };
 
+  const getDaysUntil = (date) => {
+    const diff = new Date(date) - new Date();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
   if (loading) {
     return (
       <div className="w-full py-12 flex justify-center space-x-2">
         {[...Array(3)].map((_, i) => (
           <motion.div
             key={i}
-            className="w-3 h-3 bg-[#1B12E8] rounded-full"
+            className="w-3 h-3 bg-[#0067b8] rounded-full"
             animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
           />
@@ -121,8 +125,51 @@ const EventsGrid = () => {
 
   if (!events.length) {
     return (
-      <div className="w-full py-12 text-center text-[#2A2A3D]">
-        No recent events available
+      <div className="w-full max-w-7xl mx-auto px-4 py-12">
+        {/* <h2
+          className="  mb-3  text-center blueHeaderText"
+          style={{
+            lineHeight: "1.4em",
+            fontFamily: "Space Grotesk, sans-serif",
+          }}
+        >
+          Upcoming Events
+        </h2>
+
+        <p className="text-center text-gray-600 mb-8">
+          Don't miss out on these exciting upcoming events
+        </p> */}
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+            <FaCalendar className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            No Upcoming Events
+          </h3>
+          <p className="text-gray-500 mb-6">
+            There are no upcoming events scheduled at this time. Please check
+            back later for new events.
+          </p>
+          <Link
+            to="/events"
+            className="inline-flex items-center gap-2 text-[#1b12e8]  font-medium"
+          >
+            View All Events
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -130,20 +177,21 @@ const EventsGrid = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       {/* <h2
-        className="  mb-3  text-center blueHeaderText"
-        style={{
-          lineHeight: "1.4em",
-          fontFamily: "Space Grotesk, sans-serif",
-        }}
+        className="  mb-3  text-center text-[#1b12e8] text-[30px] font-semibold"
+        style={{ lineHeight: "1.4em", fontFamily: "Space Grotesk, sans-serif" }}
       >
-        Recent Events
-      </h2> */}
+        Upcoming Events
+      </h2>
+      <p className="text-center text-[#2A2A3D] mb-8">
+        Don't miss out on these exciting upcoming events
+      </p> */}
 
       {/* View All Events Button */}
-      {/* <div className="flex justify-center mt-6 mb-8">
+      {/* <div className="flex justify-center mb-8">
         <Link
           to="/events"
-          className="bg-[#1B12E8] text-white py-2 px-6 rounded-lg transition-colors inline-flex items-center"
+          className="bg-[#1b12e8] text-white py-2 px-6 rounded-lg transition-colors inline-flex items-center"
+          style={{ fontFamily: "Space Grotesk, sans-serif" }}
         >
           View All Events
         </Link>
@@ -184,9 +232,18 @@ const EventsGrid = () => {
                 </span>
               </div>
 
-              {/* Event Type Badge */}
+              {/* Days Until Badge */}
               <div className="absolute bottom-3 left-3">
-                <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[#1B12E8] text-xs font-medium shadow-lg flex items-center gap-1">
+                <span className="bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs font-medium">
+                  {getDaysUntil(event.startDate) <= 0
+                    ? "Today"
+                    : `${getDaysUntil(event.startDate)} days left`}
+                </span>
+              </div>
+
+              {/* Event Type Badge */}
+              <div className="absolute top-3 left-3">
+                <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[#1b12e8] text-xs font-medium shadow-lg flex items-center gap-1">
                   {getEventTypeIcon(event.eventType)}
                   <span>{event.eventType}</span>
                 </span>
@@ -213,7 +270,7 @@ const EventsGrid = () => {
                   e.stopPropagation();
                   setSelectedEvent(event);
                 }}
-                className="text-[#0067b8] font-semibold hover:text-[#005599] hover:underline text-sm mb-3"
+                className="text-[#1b12e8] font-semibold  hover:underline text-sm mb-3"
               >
                 Read More
               </button> */}
@@ -222,7 +279,7 @@ const EventsGrid = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-gray-600">
                   <FaCalendar
-                    className="text-[#1B12E8] flex-shrink-0"
+                    className="text-[#1b12e8] flex-shrink-0"
                     size={12}
                   />
                   <span className="text-xs line-clamp-1">
@@ -233,7 +290,7 @@ const EventsGrid = () => {
                 {event.eventType !== "online" && event.location && (
                   <div className="flex items-center gap-2 text-gray-600">
                     <FaMapMarkerAlt
-                      className="text-[#1B12E8] flex-shrink-0"
+                      className="text-[#1b12e8] flex-shrink-0"
                       size={12}
                     />
                     <span className="text-xs line-clamp-1">
@@ -242,10 +299,10 @@ const EventsGrid = () => {
                   </div>
                 )}
 
-                {/* {event.hashtags?.length > 0 && (
+                {event.hashtags?.length > 0 && (
                   <div className="flex items-center gap-2 text-gray-600">
                     <FaHashtag
-                      className="text-[#0067b8] flex-shrink-0"
+                      className="text-[#1b12e8] flex-shrink-0"
                       size={12}
                     />
                     <div className="flex flex-wrap gap-1">
@@ -261,7 +318,7 @@ const EventsGrid = () => {
                       )}
                     </div>
                   </div>
-                )} */}
+                )}
               </div>
             </div>
           </motion.div>
@@ -387,7 +444,12 @@ const EventModal = ({ event, onClose, formatDate }) => {
                   }}
                 />
                 {/* Gradient Overlay */}
-                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" /> */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                {/* Status Badge Overlay */}
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <EventStatusBadge status={event.eventStatus} />
+                </div>
               </div>
             )}
 
@@ -396,21 +458,20 @@ const EventModal = ({ event, onClose, formatDate }) => {
               {/* Organizer Info */}
               <div className="flex items-center gap-2 mb-4 pb-4 border-b">
                 <div>
-                  {/* Status Badge Overlay */}
-                  <div className="my-4">
-                    <EventStatusBadge status={event.eventStatus} />
-                  </div>
                   {/* Title Overlay */}
                   <div className="mb-4">
                     <h2
                       className="text-2xl md:text-4xl font-bold text-black mb-2"
-                      style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                      style={{
+                        lineHeight: "1.4em",
+                        fontFamily: "Space Grotesk, sans-serif",
+                      }}
                     >
                       {event.title}
                     </h2>
                   </div>
-                  <p className="text-xs text-[#2A2A3D]">Organized by</p>
-                  <p className="text-sm font-medium text-[#2A2A3D]">
+                  <p className="text-xs text-gray-500">Organized by</p>
+                  <p className="text-sm font-medium text-gray-900">
                     {event.createdBy?.organizationName ||
                       "Unknown Organization"}
                   </p>
@@ -439,7 +500,10 @@ const EventModal = ({ event, onClose, formatDate }) => {
               <div className="mb-6">
                 <h3
                   className="font-semibold mb-2 text-lg"
-                  style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                  style={{
+                    lineHeight: "1.4em",
+                    fontFamily: "Space Grotesk, sans-serif",
+                  }}
                 >
                   About This Event
                 </h3>
@@ -453,7 +517,10 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 <div className="mb-6">
                   <h3
                     className="font-semibold mb-2 text-lg"
-                    style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                    style={{
+                      lineHeight: "1.4em",
+                      fontFamily: "Space Grotesk, sans-serif",
+                    }}
                   >
                     Location
                   </h3>
@@ -485,7 +552,10 @@ const EventModal = ({ event, onClose, formatDate }) => {
                   <div className="mb-6">
                     <h3
                       className="font-semibold mb-2 text-lg"
-                      style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                      style={{
+                        lineHeight: "1.4em",
+                        fontFamily: "Space Grotesk, sans-serif",
+                      }}
                     >
                       Join Online
                     </h3>
@@ -493,7 +563,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                       href={event.meetingLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#0067b8] text-white rounded-lg hover:bg-[#005599] transition-colors font-medium"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#1b12e8] text-white rounded-lg  transition-colors font-medium"
                     >
                       <FaVideo />
                       Access Details
@@ -508,18 +578,22 @@ const EventModal = ({ event, onClose, formatDate }) => {
                   <div className="mb-6">
                     <h3
                       className="font-semibold mb-2 text-lg"
-                      style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                      style={{
+                        lineHeight: "1.4em",
+                        fontFamily: "Space Grotesk, sans-serif",
+                      }}
                     >
                       Meeting Information
                     </h3>
-                    <a
-                      href={event.meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B12E8] text-white rounded-lg  transition-colors font-medium"
-                    >
-                      Access Details
-                    </a>
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                      <p className="text-gray-600">
+                        This event has{" "}
+                        {event.eventStatus === "past"
+                          ? "ended"
+                          : "been cancelled"}
+                        . The meeting link is no longer available.
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -528,7 +602,10 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 <div className="mb-6">
                   <h3
                     className="font-semibold mb-2 text-lg"
-                    style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                    style={{
+                      lineHeight: "1.4em",
+                      fontFamily: "Space Grotesk, sans-serif",
+                    }}
                   >
                     Contact Information
                   </h3>
@@ -536,7 +613,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                     {event.contactEmail && (
                       <a
                         href={`mailto:${event.contactEmail}`}
-                        className="flex items-center gap-2 text-[#1B12E8] hover:underline"
+                        className="flex items-center gap-2 text-[#0067b8] hover:underline"
                       >
                         <svg
                           className="w-4 h-4"
@@ -552,7 +629,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                     {event.contactPhone && (
                       <a
                         href={`tel:${event.contactPhone}`}
-                        className="flex items-center gap-2 text-[#1B12E8] hover:underline"
+                        className="flex items-center gap-2 text-[#0067b8] hover:underline"
                       >
                         <svg
                           className="w-4 h-4"
@@ -573,7 +650,10 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 <div className="mb-6">
                   <h3
                     className="font-semibold mb-2 text-lg"
-                    style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                    style={{
+                      lineHeight: "1.4em",
+                      fontFamily: "Space Grotesk, sans-serif",
+                    }}
                   >
                     More Information
                   </h3>
@@ -584,7 +664,7 @@ const EventModal = ({ event, onClose, formatDate }) => {
                     className="inline-flex items-center gap-2 text-[#0067b8] hover:underline"
                   >
                     <AiOutlineLink />
-                    Provided Link
+                    Visit Event Page
                   </a>
                 </div>
               )}
@@ -594,7 +674,10 @@ const EventModal = ({ event, onClose, formatDate }) => {
                 <div className="mb-6">
                   <h3
                     className="font-semibold mb-2 text-lg"
-                    style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                    style={{
+                      lineHeight: "1.4em",
+                      fontFamily: "Space Grotesk, sans-serif",
+                    }}
                   >
                     Hashtags
                   </h3>
@@ -625,4 +708,4 @@ const EventModal = ({ event, onClose, formatDate }) => {
   );
 };
 
-export default EventsGrid;
+export default UpcomingEvents;

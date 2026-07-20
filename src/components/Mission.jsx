@@ -1,22 +1,37 @@
 const Mission = () => {
   return (
-    <div className="px-[2em]  xl:px-[5em] mt-[5em]">
-      <div className=" m-auto mt-[2em] mb-[2.5em] sm:mb-[2.3em]">
+    <div className="px-[2em]  xl:px-[5em] my-[5em] flex flex-col sm:flex-row gap-10 sm:gap-20 items-center justify-center">
+      {/* left side */}
+      <div className="w-full sm:w-1/2">
         <h2
-          className="  mb-3  text-center blueHeaderText"
-          style={{ lineHeight: "1.4em" }}
+          className="text-[#1b12e8] text-[16px] mb-4 font-bold uppercase"
+          style={{
+            lineHeight: "1.4em",
+            fontFamily: "IBM Plex Mono, monospace",
+            letterSpacing: "0.12em",
+          }}
         >
-          The Mission
+          Our Mission
         </h2>
-
         <p
-          className=" text-xl text-gray-800 text-center w-full sm:w-[80%] m-auto"
+          className="text-[44px] text-[#0A0A1F] font-bold "
           style={{ lineHeight: "1.4em" }}
         >
-          To build a future-ready, inclusive and innovative AI-powered workforce
-          by uniting government, industry, academia and civil society to train
-          and certify talent 1M people by 2027 and connect them meaningful
-          opportunities in the digital economy.
+          We Believe Every Kenyan Can Build With AI
+        </p>
+      </div>
+      {/* right side */}
+      <div className="w-full sm:w-1/2">
+        <p
+          className=" text-xl text-[#2A2A3D] "
+          style={{
+            lineHeight: "1.4em",
+            fontFamily: "Manrope, sans-serif",
+          }}
+        >
+          To unite government, industry, academia, development partners, and
+          civil society to build AI skills, expand opportunities, and accelerate
+          Kenya's transition into an AI-powered economy.
         </p>
       </div>
     </div>

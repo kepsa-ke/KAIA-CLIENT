@@ -376,7 +376,7 @@ const AdminNews = () => {
                     <span className="text-sm">...</span>
                   ) : (
                     <>
-                      {item.published ? (
+                      {!item.published ? (
                         <MdOutlineCancel
                           size={18}
                           className="text-orange-500 cursor-pointer"

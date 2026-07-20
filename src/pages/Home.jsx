@@ -14,6 +14,8 @@ import Principles from "../components/Principles";
 import ImpactOverview from "../components/ImpactOverview";
 import NewsCarousel from "../components/NewsCarousel";
 import EventsCarousel from "../components/EventsCarousel";
+import UpcomingEvents from "../components/UpcomingEvents";
+import NewEventsComponentForHomePage from "../components/NewEventsComponentForHomePage";
 
 const Home = () => {
   return (
@@ -21,18 +23,24 @@ const Home = () => {
       <Navbar />
       <Hero />
       <Mission />
-      <div className="my-[3em]" />
       <Pillars />
-      <NewsCarousel />
+      {/* events */}
+      <NewEventsComponentForHomePage />
+      {/* upcoming events */}
+      {/* <UpcomingEvents /> */}
+
+      {/* <EventsCarousel /> */}
+      <div className="my-[3em]" />
+
+      {/* <NewsCarousel /> */}
       <ImpactOverview />
-      <EventsCarousel />
-      <ReqInfo />
-      <WhyJoin />
-      <AimedAt />
-      <Principles />
-      <TrainingContent />
-      <Members />
-      <TechnicalPartners />
+      {/* <ReqInfo /> */}
+      {/* <WhyJoin /> */}
+      {/* <AimedAt /> */}
+      {/* <Principles /> */}
+      {/* <TrainingContent /> */}
+      {/* <Members />
+      <TechnicalPartners /> */}
       <Footer />
     </div>
   );

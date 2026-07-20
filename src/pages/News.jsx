@@ -9,6 +9,7 @@ import { HiOutlinePhotograph } from "react-icons/hi";
 import moment from "moment";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const NewsModal = ({ news, onClose, formatDate }) => {
   if (!news) return null;
@@ -43,7 +44,7 @@ const NewsModal = ({ news, onClose, formatDate }) => {
           {/* Title */}
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
-            style={{ color: "#0067b8" }}
+            style={{ color: "#1B12E8" }}
           >
             {news.title}
           </h2>
@@ -85,7 +86,7 @@ const NewsModal = ({ news, onClose, formatDate }) => {
                 <span
                   key={i}
                   className="px-3 py-1 rounded-full text-sm"
-                  style={{ backgroundColor: "#e6f0fa", color: "#0067b8" }}
+                  style={{ backgroundColor: "#e6f0fa", color: "#1B12E8" }}
                 >
                   #{tag}
                 </span>
@@ -100,7 +101,7 @@ const NewsModal = ({ news, onClose, formatDate }) => {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-white hover:opacity-90 transition"
-              style={{ backgroundColor: "#0067b8" }}
+              style={{ backgroundColor: "#1B12E8" }}
             >
               <BiLink />
               Read Full Article
@@ -150,7 +151,7 @@ const NewsCard = ({ item, onClick, formatDate, getExcerpt }) => (
       {/* Title */}
       <h3
         className="text-lg font-semibold mb-2 line-clamp-2 text-gray-800"
-        style={{ color: "#0067b8" }}
+        style={{ color: "#1B12E8" }}
       >
         {item.title.length > 40
           ? `${item.title.substring(0, 40)}...`
@@ -184,7 +185,7 @@ const NewsCard = ({ item, onClick, formatDate, getExcerpt }) => (
             <span
               key={i}
               className="text-xs px-2 py-1 bg-blue-50 rounded-full"
-              style={{ color: "#0067b8", backgroundColor: "#e6f0fa" }}
+              style={{ color: "#1B12E8", backgroundColor: "#e6f0fa" }}
             >
               #{tag}
             </span>
@@ -346,14 +347,14 @@ const News = () => {
   return (
     <div className="">
       <Navbar />
-      <div className="px-[4em]">
+      <div className="md:px-[4em]">
         <div className="mt-[3em] mb-[3em]" />
         {/* Header */}
         <div className="bg-white  shadow-sm">
           <div className="container mx-auto px-4 py-8">
             <h1
               className="text-3xl md:text-4xl font-bold mb-2 mt-[1em]"
-              style={{ color: "#0067b8" }}
+              style={{ color: "#1B12E8" }}
             >
               News & Updates
             </h1>
@@ -517,7 +518,7 @@ const News = () => {
                 <button
                   onClick={clearFilters}
                   className="mt-4 px-6 py-2 rounded-md text-white hover:opacity-90 transition"
-                  style={{ backgroundColor: "#0067b8" }}
+                  style={{ backgroundColor: "#1B12E8" }}
                 >
                   Clear Filters
                 </button>
@@ -538,6 +539,7 @@ const News = () => {
           />
         )}
       </div>
+      <Footer />
     </div>
   );
 };

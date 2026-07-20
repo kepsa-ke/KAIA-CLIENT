@@ -30,7 +30,7 @@ import {
   FaEye,
   FaThumbsUp,
   FaChartLine,
-  FaUserGraduate,
+  FaLink,
   FaCheckCircle,
 } from "react-icons/fa";
 import {
@@ -40,6 +40,7 @@ import {
   MdTrendingUp,
   MdTrendingDown,
   MdOutlineCancel,
+  MdOutlineDescription,
 } from "react-icons/md";
 import { HiOutlinePhotograph, HiOutlineTag } from "react-icons/hi";
 import { BiReset } from "react-icons/bi";
@@ -59,7 +60,6 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import { CourseCategories } from "../../data";
 import ImageUpload from "../../components/common/ImageUpload";
 
 const COLORS = [
@@ -69,6 +69,8 @@ const COLORS = [
   "#F6F1F1",
   "#FF8042",
   "#00C49F",
+  "#10B981",
+  "#F59E0B",
 ];
 
 // Stats Card Component
@@ -113,13 +115,14 @@ const ApprovalBadge = ({ approved }) => {
   );
 };
 
-// Courses Table Component
-const CoursesTable = ({
+// Insights Table Component (Desktop)
+const InsightsTable = ({
   data,
   onView,
   onEdit,
   onDelete,
   onToggleApproval,
+  onToggleFeatured,
   loadingApproval,
 }) => (
   <table className="w-full border border-gray-300 text-sm">
@@ -128,23 +131,23 @@ const CoursesTable = ({
         <th className="p-2 text-left font-semibold border-r">Image</th>
         <th className="p-2 text-left font-semibold border-r">Title</th>
         <th className="p-2 text-left font-semibold border-r">Organization</th>
-        <th className="p-2 text-left font-semibold border-r">Category</th>
+        <th className="p-2 text-left font-semibold border-r">Date</th>
+        <th className="p-2 text-left font-semibold border-r">Tags</th>
         <th className="p-2 text-left font-semibold border-r">Status</th>
-        {/* <th className="p-2 text-left font-semibold border-r">Views</th>
-        <th className="p-2 text-left font-semibold border-r">Enrollments</th> */}
+        <th className="p-2 text-left font-semibold border-r">Featured</th>
+        <th className="p-2 text-left font-semibold border-r">Stats</th>
         <th className="p-2 text-left font-semibold border-r">Created By</th>
-        <th className="p-2 text-left font-semibold border-r">Created At</th>
         <th className="p-2 text-left font-semibold border-r">Actions</th>
       </tr>
     </thead>
     <tbody>
-      {data.map((course) => (
-        <tr key={course._id} className="even:bg-gray-50 hover:bg-gray-100">
+      {data.map((insight) => (
+        <tr key={insight._id} className="even:bg-gray-50 hover:bg-gray-100">
           <td className="p-2 border-r">
-            {course.image ? (
+            {insight.image ? (
               <img
-                src={course.image}
-                alt={course.title}
+                src={insight.image}
+                alt={insight.title}
                 className="w-12 h-12 object-cover rounded"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -156,82 +159,104 @@ const CoursesTable = ({
             )}
           </td>
           <td className="p-2 border-r font-medium max-w-xs">
-            <div className="line-clamp-2">{course.title}</div>
+            <div className="line-clamp-2">{insight.title}</div>
           </td>
-          <td className="p-2 border-r">{course.organization}</td>
-          <td className="p-2 border-r">
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-              {course.category}
-            </span>
+          <td className="p-2 border-r">{insight.organizationName}</td>
+          <td className="p-2 border-r text-xs">
+            {moment(insight.dateOfInsight).format("MMM DD, YYYY")}
           </td>
           <td className="p-2 border-r">
-            <ApprovalBadge approved={course.approved} />
+            <div className="flex flex-wrap gap-1">
+              {insight.tags &&
+                insight.tags.slice(0, 2).map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="px-1 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+            </div>
           </td>
-          {/* <td
-            className="p-2 border-r font-semibold"
-            style={{ color: "#146C94" }}
-          >
-            {course.views || 0}
+          <td className="p-2 border-r">
+            <ApprovalBadge approved={insight.approved} />
           </td>
-          <td className="p-2 border-r font-semibold text-green-600">
-            {course.enrollments || 0}
-          </td> */}
+          <td className="p-2 border-r">
+            {insight.isFeatured ? (
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                ⭐ Featured
+              </span>
+            ) : (
+              <span className="text-xs text-gray-400">-</span>
+            )}
+          </td>
+          <td className="p-2 border-r">
+            <div className="flex gap-2 text-xs">
+              <span className="text-[#146C94]">👁️ {insight.views || 0}</span>
+              <span className="text-green-600">🔗 {insight.clicks || 0}</span>
+            </div>
+          </td>
           <td className="p-2 border-r">
             <div>
               <div className="font-medium text-xs">
-                {course.createdBy?.organizationName ||
-                  course.organization ||
-                  "Unknown"}
+                {insight.createdBy?.organizationName ||
+                  insight.organizationName}
               </div>
               <div className="text-xs text-gray-500">
-                {course.createdBy?.email?.split("@")[0] ||
-                  course.email?.split("@")[0] ||
-                  ""}
+                {insight.createdBy?.email?.split("@")[0] || ""}
               </div>
             </div>
-          </td>
-          <td className="p-2 border-r text-xs">
-            {moment(course.createdAt).format("MMM DD, YYYY")}
           </td>
           <td className="p-2">
             <div className="flex gap-2 items-center flex-wrap">
               <AiOutlineEye
                 size={18}
                 className="text-[#146C94] cursor-pointer hover:scale-110 transition-transform"
-                onClick={() => onView(course)}
+                onClick={() => onView(insight)}
                 title="View"
               />
               <AiOutlineEdit
                 size={18}
                 className="text-blue-600 cursor-pointer hover:scale-110 transition-transform"
                 title="Edit"
-                onClick={() => onEdit(course)}
+                onClick={() => onEdit(insight)}
               />
-              {loadingApproval === course._id ? (
+              {loadingApproval === insight._id ? (
                 <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 <>
-                  {!course.approved ? (
-                    <MdOutlineCancel
-                      size={18}
-                      className="text-orange-500 cursor-pointer hover:scale-110 transition-transform"
-                      title="Revoke Approval"
-                      onClick={() => onToggleApproval(course)}
-                    />
-                  ) : (
+                  {insight.approved ? (
                     <FaCheckCircle
                       size={18}
                       className="text-green-600 cursor-pointer hover:scale-110 transition-transform"
+                      title="Revoke Approval"
+                      onClick={() => onToggleApproval(insight)}
+                    />
+                  ) : (
+                    <MdOutlineCancel
+                      size={18}
+                      className="text-orange-500 cursor-pointer hover:scale-110 transition-transform"
                       title="Approve"
-                      onClick={() => onToggleApproval(course)}
+                      onClick={() => onToggleApproval(insight)}
                     />
                   )}
+                  <button
+                    onClick={() => onToggleFeatured(insight)}
+                    title={
+                      insight.isFeatured ? "Remove Featured" : "Make Featured"
+                    }
+                    className={`cursor-pointer hover:scale-110 transition-transform ${
+                      insight.isFeatured ? "text-purple-600" : "text-gray-400"
+                    }`}
+                  >
+                    ⭐
+                  </button>
                 </>
               )}
               <AiOutlineDelete
                 size={18}
                 className="text-red-600 cursor-pointer hover:scale-110 transition-transform"
-                onClick={() => onDelete(course)}
+                onClick={() => onDelete(insight)}
                 title="Delete"
               />
             </div>
@@ -242,23 +267,24 @@ const CoursesTable = ({
   </table>
 );
 
-// Course Card Component for Mobile
-const CourseCard = ({
-  course,
+// Insight Card Component (Mobile)
+const InsightCard = ({
+  insight,
   onView,
   onEdit,
   onDelete,
   onToggleApproval,
+  onToggleFeatured,
   loadingApproval,
 }) => (
   <div className="bg-white border rounded-lg p-4 mb-4 shadow-sm hover:shadow-md transition">
     <div className="flex gap-4">
       {/* Image */}
       <div className="w-20 h-20 flex-shrink-0">
-        {course.image ? (
+        {insight.image ? (
           <img
-            src={course.image}
-            alt={course.title}
+            src={insight.image}
+            alt={insight.title}
             className="w-full h-full object-cover rounded"
             onError={(e) => {
               e.target.onerror = null;
@@ -274,82 +300,103 @@ const CourseCard = ({
 
       {/* Content */}
       <div className="flex-1">
-        <h3 className="font-semibold text-lg line-clamp-1">{course.title}</h3>
+        <div className="flex justify-between items-start">
+          <h3 className="font-semibold text-lg line-clamp-1 flex-1">
+            {insight.title}
+          </h3>
+          {insight.isFeatured && (
+            <span className="text-purple-600 text-sm ml-2">⭐</span>
+          )}
+        </div>
 
-        {/* Organization and Category */}
-        <div className="flex items-center gap-2 mt-1 flex-wrap">
+        {/* Organization */}
+        <div className="flex items-center gap-2 mt-1">
           <span className="text-xs text-gray-600 flex items-center gap-1">
             <IoPeopleOutline size={12} />
-            {course.organization}
+            {insight.organizationName}
           </span>
-          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-            {course.category}
-          </span>
+        </div>
+
+        {/* Tags */}
+        <div className="flex items-center gap-1 mt-1 flex-wrap">
+          {insight.tags &&
+            insight.tags.slice(0, 3).map((tag, idx) => (
+              <span
+                key={idx}
+                className="text-xs bg-gray-100 text-gray-600 px-1 py-0.5 rounded"
+              >
+                #{tag}
+              </span>
+            ))}
         </div>
 
         {/* Stats */}
         <div className="flex items-center gap-3 mt-2 text-sm">
           <div className="flex items-center gap-1" style={{ color: "#146C94" }}>
             <FaEye size={12} />
-            <span className="font-semibold">{course.views || 0}</span>
+            <span className="font-semibold">{insight.views || 0}</span>
             <span className="text-gray-500 text-xs">views</span>
           </div>
           <div className="flex items-center gap-1 text-green-600">
-            <FaUserGraduate size={12} />
-            <span className="font-semibold">{course.enrollments || 0}</span>
-            <span className="text-gray-500 text-xs">enrolled</span>
+            <FaLink size={12} />
+            <span className="font-semibold">{insight.clicks || 0}</span>
+            <span className="text-gray-500 text-xs">clicks</span>
           </div>
         </div>
 
         {/* Approval Status */}
         <div className="mt-2">
-          <ApprovalBadge approved={course.approved} />
-        </div>
-
-        {/* Creator Info */}
-        <div className="mt-1 text-xs text-gray-500">
-          By: {course.createdBy?.organizationName || course.organization}
+          <ApprovalBadge approved={insight.approved} />
         </div>
 
         {/* Actions */}
         <div className="flex gap-3 mt-3">
           <AiOutlineEye
             size={18}
-            className="text-[#146C94] cursor-pointer hover:scale-110 transition-transform"
-            onClick={() => onView(course)}
+            className="text-[#146C94] cursor-pointer hover:scale-110"
+            onClick={() => onView(insight)}
             title="View"
           />
           <AiOutlineEdit
             size={18}
-            className="text-blue-600 cursor-pointer hover:scale-110 transition-transform"
+            className="text-blue-600 cursor-pointer hover:scale-110"
             title="Edit"
-            onClick={() => onEdit(course)}
+            onClick={() => onEdit(insight)}
           />
-          {loadingApproval === course._id ? (
+          {loadingApproval === insight._id ? (
             <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
           ) : (
             <>
-              {course.approved ? (
+              {insight.approved ? (
                 <MdOutlineCancel
                   size={18}
-                  className="text-orange-500 cursor-pointer hover:scale-110 transition-transform"
+                  className="text-orange-500 cursor-pointer hover:scale-110"
                   title="Revoke Approval"
-                  onClick={() => onToggleApproval(course)}
+                  onClick={() => onToggleApproval(insight)}
                 />
               ) : (
                 <FaCheckCircle
                   size={18}
-                  className="text-green-600 cursor-pointer hover:scale-110 transition-transform"
+                  className="text-green-600 cursor-pointer hover:scale-110"
                   title="Approve"
-                  onClick={() => onToggleApproval(course)}
+                  onClick={() => onToggleApproval(insight)}
                 />
               )}
+              <button
+                onClick={() => onToggleFeatured(insight)}
+                className={`cursor-pointer hover:scale-110 ${
+                  insight.isFeatured ? "text-purple-600" : "text-gray-400"
+                }`}
+                title={insight.isFeatured ? "Remove Featured" : "Make Featured"}
+              >
+                ⭐
+              </button>
             </>
           )}
           <AiOutlineDelete
             size={18}
-            className="text-red-600 cursor-pointer hover:scale-110 transition-transform"
-            onClick={() => onDelete(course)}
+            className="text-red-600 cursor-pointer hover:scale-110"
+            onClick={() => onDelete(insight)}
             title="Delete"
           />
         </div>
@@ -358,80 +405,78 @@ const CourseCard = ({
   </div>
 );
 
-const AdminCourses = () => {
+const AdminInsights = () => {
   const { user } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const [leaders, setLeaders] = useState([]);
+  const [insights, setInsights] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [viewModal, setViewModal] = useState({ show: false, course: null });
-  const [deleteModal, setDeleteModal] = useState({ show: false, course: null });
-  const [formModal, setFormModal] = useState({ show: false, course: null });
+  const [viewModal, setViewModal] = useState({ show: false, insight: null });
+  const [deleteModal, setDeleteModal] = useState({
+    show: false,
+    insight: null,
+  });
+  const [formModal, setFormModal] = useState({ show: false, insight: null });
   const [submitting, setSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [categoryFilter, setCategoryFilter] = useState("all");
   const [approvalFilter, setApprovalFilter] = useState("all");
-  const [availableCategories, setAvailableCategories] = useState([]);
+  const [organizationFilter, setOrganizationFilter] = useState("all");
+  const [availableOrganizations, setAvailableOrganizations] = useState([]);
   const [loadingApproval, setLoadingApproval] = useState(null);
+  const [loadingFeatured, setLoadingFeatured] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [showFilters, setShowFilters] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
-    desc: "",
-    link: "",
-    organization: "",
-    tag: "",
-    category: "",
-    email: "",
     image: "",
+    dateOfInsight: "",
+    insightSummary: "",
+    linkToFullReport: "",
+    methodologyInBrief: "",
+    tags: "",
   });
 
   const recordsPerPage = 10;
 
-  // Fetch all courses (admin)
-  const handleFetchCourses = async () => {
+  // Fetch all insights (admin)
+  const handleFetchInsights = async () => {
     try {
       setLoading(true);
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-      const response = await axios.get("/courses/", config);
+      const response = await axios.get("/insights/", config);
 
-      let coursesData = response.data.data || response.data || [];
-      setCourses(coursesData);
+      let insightsData = response.data.data || response.data || [];
+      setInsights(insightsData);
 
-      // Extract unique categories
-      const categories = [
-        ...new Set(coursesData.map((course) => course.category)),
+      // Extract unique organizations
+      const orgs = [
+        ...new Set(insightsData.map((insight) => insight.organizationName)),
       ];
-      setAvailableCategories(categories);
+      setAvailableOrganizations(orgs);
 
-      // Extract unique leaders (creators)
-      const uniqueLeaders = {};
-      coursesData.forEach((course) => {
-        const creatorEmail = course.createdBy?.email || course.email;
-        if (creatorEmail && !uniqueLeaders[creatorEmail]) {
-          uniqueLeaders[creatorEmail] = {
-            email: creatorEmail,
-            name: course.createdBy?.organizationName || course.organization,
-            courseCount: 0,
+      // Extract organization stats
+      const orgStats = {};
+      insightsData.forEach((insight) => {
+        const orgName = insight.organizationName;
+        if (!orgStats[orgName]) {
+          orgStats[orgName] = {
+            name: orgName,
+            insightCount: 0,
             totalViews: 0,
-            totalEnrollments: 0,
+            totalClicks: 0,
             approvedCount: 0,
           };
         }
-        if (uniqueLeaders[creatorEmail]) {
-          uniqueLeaders[creatorEmail].courseCount++;
-          uniqueLeaders[creatorEmail].totalViews += course.views || 0;
-          uniqueLeaders[creatorEmail].totalEnrollments +=
-            course.enrollments || 0;
-          if (course.approved) uniqueLeaders[creatorEmail].approvedCount++;
-        }
+        orgStats[orgName].insightCount++;
+        orgStats[orgName].totalViews += insight.views || 0;
+        orgStats[orgName].totalClicks += insight.clicks || 0;
+        if (insight.approved) orgStats[orgName].approvedCount++;
       });
-
-      setLeaders(Object.values(uniqueLeaders));
+      setOrganizations(Object.values(orgStats));
     } catch (err) {
-      toast.error(err.response?.data?.error || "Error fetching courses");
+      toast.error(err.response?.data?.message || "Error fetching insights");
       console.log(err);
     } finally {
       setLoading(false);
@@ -439,33 +484,28 @@ const AdminCourses = () => {
   };
 
   useEffect(() => {
-    if (user?.token) {
-      handleFetchCourses();
+    if (user?.token && user?.isAdmin) {
+      handleFetchInsights();
     }
   }, [user]);
 
   // Calculate comprehensive stats
   const stats = {
-    total: courses.length,
-    approved: courses.filter((c) => c.approved).length,
-    pending: courses.filter((c) => !c.approved).length,
-    totalViews: courses.reduce((sum, c) => sum + (c.views || 0), 0),
-    totalEnrollments: courses.reduce((sum, c) => sum + (c.enrollments || 0), 0),
-    totalLeaders: leaders.length,
-    avgViewsPerCourse:
-      courses.length > 0
+    total: insights.length,
+    approved: insights.filter((i) => i.approved).length,
+    pending: insights.filter((i) => !i.approved).length,
+    featured: insights.filter((i) => i.isFeatured).length,
+    totalViews: insights.reduce((sum, i) => sum + (i.views || 0), 0),
+    totalClicks: insights.reduce((sum, i) => sum + (i.clicks || 0), 0),
+    totalOrganizations: organizations.length,
+    avgViewsPerInsight:
+      insights.length > 0
         ? Math.round(
-            courses.reduce((sum, c) => sum + (c.views || 0), 0) /
-              courses.length,
+            insights.reduce((sum, i) => sum + (i.views || 0), 0) /
+              insights.length,
           )
         : 0,
-    avgEnrollmentsPerCourse:
-      courses.length > 0
-        ? Math.round(
-            courses.reduce((sum, c) => sum + (c.enrollments || 0), 0) /
-              courses.length,
-          )
-        : 0,
+    totalTags: [...new Set(insights.flatMap((i) => i.tags || []))].length,
   };
 
   // Get monthly trends
@@ -475,165 +515,202 @@ const AdminCourses = () => {
       const month = moment().subtract(i, "months").format("MMM YYYY");
       last6Months.push({
         month,
-        courses: 0,
+        insights: 0,
         views: 0,
-        enrollments: 0,
+        clicks: 0,
         approved: 0,
       });
     }
 
-    courses.forEach((course) => {
-      const courseMonth = moment(course.createdAt).format("MMM YYYY");
-      const monthData = last6Months.find((m) => m.month === courseMonth);
+    insights.forEach((insight) => {
+      const insightMonth = moment(insight.createdAt).format("MMM YYYY");
+      const monthData = last6Months.find((m) => m.month === insightMonth);
       if (monthData) {
-        monthData.courses++;
-        monthData.views += course.views || 0;
-        monthData.enrollments += course.enrollments || 0;
-        if (course.approved) monthData.approved++;
+        monthData.insights++;
+        monthData.views += insight.views || 0;
+        monthData.clicks += insight.clicks || 0;
+        if (insight.approved) monthData.approved++;
       }
     });
 
     return last6Months;
   };
 
-  // Get category distribution
-  const getCategoryDistribution = () => {
-    const categoryMap = new Map();
-    courses.forEach((course) => {
-      categoryMap.set(
-        course.category,
-        (categoryMap.get(course.category) || 0) + 1,
-      );
+  // Get tag distribution
+  const getTagDistribution = () => {
+    const tagMap = new Map();
+    insights.forEach((insight) => {
+      (insight.tags || []).forEach((tag) => {
+        tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+      });
     });
-    return Array.from(categoryMap.entries())
+    return Array.from(tagMap.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 6)
       .map(([name, value]) => ({ name, value }));
   };
 
-  // Get popular courses (top 5 by views)
-  const popularCourses = [...courses]
+  // Get approval distribution
+  const getApprovalDistribution = () => {
+    return [
+      { name: "Approved", value: stats.approved },
+      { name: "Pending", value: stats.pending },
+    ];
+  };
+
+  // Get popular insights (top 5 by views)
+  const popularInsights = [...insights]
     .sort((a, b) => (b.views || 0) - (a.views || 0))
     .slice(0, 5);
 
-  // Get top leaders
-  const topLeaders = [...leaders]
+  // Get top organizations
+  const topOrganizations = [...organizations]
     .sort((a, b) => b.totalViews - a.totalViews)
     .slice(0, 5);
 
-  // Filter courses
-  const filteredCourses = courses.filter((course) => {
+  // Filter insights
+  const filteredInsights = insights.filter((insight) => {
     const matchesSearch =
-      course.title?.toLowerCase().includes(searchText.toLowerCase()) ||
-      course.desc?.toLowerCase().includes(searchText.toLowerCase()) ||
-      course.organization?.toLowerCase().includes(searchText.toLowerCase()) ||
-      course.email?.toLowerCase().includes(searchText.toLowerCase());
+      insight.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+      insight.insightSummary
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      insight.methodologyInBrief
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      insight.tags?.some((tag) =>
+        tag.toLowerCase().includes(searchText.toLowerCase()),
+      );
 
-    const matchesCategory =
-      categoryFilter === "all" || course.category === categoryFilter;
+    const matchesOrganization =
+      organizationFilter === "all" ||
+      insight.organizationName === organizationFilter;
+
     const matchesApproval =
       approvalFilter === "all" ||
-      (approvalFilter === "approved" && course.approved) ||
-      (approvalFilter === "pending" && !course.approved);
+      (approvalFilter === "approved" && insight.approved) ||
+      (approvalFilter === "pending" && !insight.approved);
 
     let matchesDateRange = true;
     if (dateRange.start) {
       matchesDateRange =
         matchesDateRange &&
-        moment(course.createdAt).isSameOrAfter(moment(dateRange.start), "day");
+        moment(insight.createdAt).isSameOrAfter(moment(dateRange.start), "day");
     }
     if (dateRange.end) {
       matchesDateRange =
         matchesDateRange &&
-        moment(course.createdAt).isSameOrBefore(moment(dateRange.end), "day");
+        moment(insight.createdAt).isSameOrBefore(moment(dateRange.end), "day");
     }
 
     return (
-      matchesSearch && matchesCategory && matchesApproval && matchesDateRange
+      matchesSearch &&
+      matchesOrganization &&
+      matchesApproval &&
+      matchesDateRange
     );
   });
 
-  const sortedCourses = [...filteredCourses].sort(
+  const sortedInsights = [...filteredInsights].sort(
     (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf(),
   );
 
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
-  const paginatedCourses = sortedCourses.slice(firstIndex, lastIndex);
-  const totalPages = Math.ceil(sortedCourses.length / recordsPerPage);
+  const paginatedInsights = sortedInsights.slice(firstIndex, lastIndex);
+  const totalPages = Math.ceil(sortedInsights.length / recordsPerPage);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchText, categoryFilter, approvalFilter, dateRange]);
+  }, [searchText, organizationFilter, approvalFilter, dateRange]);
 
   const clearFilters = () => {
     setSearchText("");
-    setCategoryFilter("all");
+    setOrganizationFilter("all");
     setApprovalFilter("all");
     setDateRange({ start: "", end: "" });
   };
 
   // Toggle Approval
-  const handleToggleApproval = async (course) => {
+  const handleToggleApproval = async (insight) => {
     try {
-      setLoadingApproval(course._id);
+      setLoadingApproval(insight._id);
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-      await axios.patch(`/courses/${course._id}/toggle-approval`, {}, config);
+      await axios.patch(`/insights/${insight._id}/toggle-approval`, {}, config);
       toast.success(
-        `Course ${course.approved ? "unapproved" : "approved"} successfully`,
+        `Insight ${insight.approved ? "unapproved" : "approved"} successfully`,
       );
-      handleFetchCourses();
+      handleFetchInsights();
     } catch (error) {
       toast.error(
-        error.response?.data?.error || "Failed to update approval status",
+        error.response?.data?.message || "Failed to update approval status",
       );
     } finally {
       setLoadingApproval(null);
     }
   };
 
-  // Delete Course
-  const handleDeleteCourse = async () => {
+  // Toggle Featured
+  const handleToggleFeatured = async (insight) => {
+    try {
+      setLoadingFeatured(insight._id);
+      const config = { headers: { Authorization: `Bearer ${user?.token}` } };
+      await axios.patch(`/insights/${insight._id}/toggle-featured`, {}, config);
+      toast.success(
+        `Insight ${insight.isFeatured ? "removed from featured" : "featured"} successfully`,
+      );
+      handleFetchInsights();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update featured status",
+      );
+    } finally {
+      setLoadingFeatured(null);
+    }
+  };
+
+  // Delete Insight
+  const handleDeleteInsight = async () => {
     try {
       setLoadingAction(true);
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-      await axios.delete(`/courses/${deleteModal.course._id}`, config);
-      toast.success("Course deleted successfully");
-      setDeleteModal({ show: false, course: null });
-      handleFetchCourses();
+      await axios.delete(`/insights/${deleteModal.insight._id}`, config);
+      toast.success("Insight deleted successfully");
+      setDeleteModal({ show: false, insight: null });
+      handleFetchInsights();
     } catch (error) {
-      toast.error(error.response?.data?.error || "Error deleting course");
+      toast.error(error.response?.data?.message || "Error deleting insight");
     } finally {
       setLoadingAction(false);
     }
   };
 
   // Handle form open
-  const handleOpenForm = (courseItem = null) => {
-    if (courseItem) {
+  const handleOpenForm = (insightItem = null) => {
+    if (insightItem) {
       setFormData({
-        title: courseItem.title || "",
-        desc: courseItem.desc || "",
-        link: courseItem.link || "",
-        organization: courseItem.organization || "",
-        tag: courseItem.tag || "",
-        category: courseItem.category || "",
-        email: courseItem.email || "",
-        image: courseItem.image || "",
+        title: insightItem.title || "",
+        image: insightItem.image || "",
+        dateOfInsight: insightItem.dateOfInsight
+          ? moment(insightItem.dateOfInsight).format("YYYY-MM-DD")
+          : "",
+        insightSummary: insightItem.insightSummary || "",
+        linkToFullReport: insightItem.linkToFullReport || "",
+        methodologyInBrief: insightItem.methodologyInBrief || "",
+        tags: insightItem.tags ? insightItem.tags.join(", ") : "",
       });
     } else {
       setFormData({
         title: "",
-        desc: "",
-        link: "",
-        organization: "",
-        tag: "",
-        category: "",
-        email: "",
         image: "",
+        dateOfInsight: "",
+        insightSummary: "",
+        linkToFullReport: "",
+        methodologyInBrief: "",
+        tags: "",
       });
     }
-    setFormModal({ show: true, course: courseItem });
+    setFormModal({ show: true, insight: insightItem });
   };
 
   // Handle Create / Update
@@ -643,21 +720,45 @@ const AdminCourses = () => {
       setSubmitting(true);
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
 
-      if (formModal.course) {
-        await axios.put(`/courses/${formModal.course._id}`, formData, config);
-        toast.success("Course updated successfully");
+      const payload = {
+        ...formData,
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag),
+      };
+
+      if (formModal.insight) {
+        await axios.put(`/insights/${formModal.insight._id}`, payload, config);
+        toast.success("Insight updated successfully");
       } else {
-        await axios.post("/courses", formData, config);
-        toast.success("Course created successfully");
+        await axios.post("/insights", payload, config);
+        toast.success("Insight created successfully");
       }
-      setFormModal({ show: false, course: null });
-      handleFetchCourses();
+      setFormModal({ show: false, insight: null });
+      handleFetchInsights();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Error saving course");
+      toast.error(err.response?.data?.message || "Error saving insight");
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (!user?.isAdmin) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-center">
+            <div className="text-red-600 text-6xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+            <p className="text-gray-600">
+              You don't have permission to view this page.
+            </p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -666,9 +767,10 @@ const AdminCourses = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
-              <h2 className="text-2xl font-bold mb-1">Courses Management</h2>
+              <h2 className="text-2xl font-bold mb-1">Insights Management</h2>
               <p className="text-gray-600">
-                Manage all courses, approve content, and track performance
+                Manage all tech & AI insights, approve content, and track
+                performance
               </p>
             </div>
             <button
@@ -676,43 +778,42 @@ const AdminCourses = () => {
               className="mt-4 md:mt-0 flex items-center gap-2 px-4 py-2 bg-[#146C94] text-white rounded-md hover:bg-[#0d5675] transition"
             >
               <AiOutlinePlus size={18} />
-              Create Course
+              Create Insight
             </button>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <StatsCard
-              title="Total Courses"
+              title="Total Insights"
               value={stats.total}
               icon={IoBookOutline}
               color="#146C94"
               bgColor="#e6f0fa"
               subtitle={`${stats.approved} approved, ${stats.pending} pending`}
             />
-            {/* <StatsCard
+            <StatsCard
               title="Total Views"
               value={stats.totalViews}
               icon={FaEye}
               color="#0b5e42"
               bgColor="#e0f2e9"
-              subtitle={`Avg ${stats.avgViewsPerCourse} per course`}
+              subtitle={`Avg ${stats.avgViewsPerInsight} per insight`}
             />
             <StatsCard
-              title="Total Enrollments"
-              value={stats.totalEnrollments}
-              icon={FaUserGraduate}
+              title="Total Clicks"
+              value={stats.totalClicks}
+              icon={FaLink}
               color="#856404"
               bgColor="#fff3cd"
-              subtitle={`Avg ${stats.avgEnrollmentsPerCourse} per course`}
-            /> */}
+            />
             <StatsCard
-              title="Content Leaders"
-              value={stats.totalLeaders}
+              title="Organizations"
+              value={stats.totalOrganizations}
               icon={IoPeopleOutline}
               color="#6b21a8"
               bgColor="#f3e8ff"
-              subtitle="Active course creators"
+              subtitle={`${stats.featured} featured insights`}
             />
           </div>
 
@@ -721,7 +822,7 @@ const AdminCourses = () => {
             {/* Performance Trends */}
             <div className="bg-white p-4 rounded-xl shadow-sm border col-span-2">
               <h3 className="text-lg font-semibold mb-4">
-                Course Performance Trends
+                Insight Performance Trends
               </h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -734,11 +835,11 @@ const AdminCourses = () => {
                     <Area
                       yAxisId="left"
                       type="monotone"
-                      dataKey="courses"
+                      dataKey="insights"
                       stroke="#146C94"
                       fill="#146C94"
                       fillOpacity={0.3}
-                      name="Courses Added"
+                      name="Insights Added"
                     />
                     <Area
                       yAxisId="left"
@@ -760,71 +861,84 @@ const AdminCourses = () => {
                     <Line
                       yAxisId="right"
                       type="monotone"
-                      dataKey="enrollments"
+                      dataKey="clicks"
                       stroke="#00C49F"
                       strokeWidth={2}
-                      name="Enrollments"
+                      name="Total Clicks"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Category Distribution */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border">
-              <h3 className="text-lg font-semibold mb-4">
-                Courses by Category
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={getCategoryDistribution()}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={80}
-                      dataKey="value"
-                    >
-                      {getCategoryDistribution().map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+            {/* Approval & Tag Distribution */}
+            <div className="space-y-4">
+              {/* Approval Status */}
+              <div className="bg-white p-4 rounded-xl shadow-sm border">
+                <h3 className="text-lg font-semibold mb-4">Approval Status</h3>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={getApprovalDistribution()}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) =>
+                          `${name}: ${(percent * 100).toFixed(0)}%`
+                        }
+                        outerRadius={60}
+                        dataKey="value"
+                      >
+                        <Cell fill="#10B981" />
+                        <Cell fill="#F59E0B" />
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Tag Distribution */}
+              <div className="bg-white p-4 rounded-xl shadow-sm border">
+                <h3 className="text-lg font-semibold mb-4">Popular Tags</h3>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={getTagDistribution()} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="number" />
+                      <YAxis dataKey="name" type="category" width={80} />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="#146C94" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Popular Courses & Top Leaders */}
+          {/* Popular Insights & Top Organizations */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Popular Courses */}
-            {/* <div className="bg-white p-4 rounded-xl shadow-sm border">
+            {/* Popular Insights */}
+            <div className="bg-white p-4 rounded-xl shadow-sm border">
               <h3 className="text-lg font-semibold mb-4">
-                🔥 Most Popular Courses
+                🔥 Most Viewed Insights
               </h3>
               <div className="space-y-3">
-                {popularCourses.map((course, index) => (
+                {popularInsights.map((insight, index) => (
                   <div
-                    key={course._id}
+                    key={insight._id}
                     className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg"
                   >
                     <div
                       className="w-8 h-8 flex items-center justify-center font-bold text-lg"
-                      style={{ color: COLORS[index] }}
+                      style={{ color: COLORS[index % COLORS.length] }}
                     >
                       #{index + 1}
                     </div>
                     <img
-                      src={course.image}
-                      alt={course.title}
+                      src={insight.image}
+                      alt={insight.title}
                       className="w-12 h-12 object-cover rounded"
                       onError={(e) => {
                         e.target.src =
@@ -833,45 +947,44 @@ const AdminCourses = () => {
                     />
                     <div className="flex-1">
                       <h4 className="font-medium text-sm line-clamp-1">
-                        {course.title}
+                        {insight.title}
                       </h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span>{course.organization}</span>
+                        <span>{insight.organizationName}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                          <FaEye size={10} /> {course.views || 0} views
+                          <FaEye size={10} /> {insight.views || 0} views
                         </span>
                         <span className="flex items-center gap-1 text-green-600">
-                          <FaUserGraduate size={10} /> {course.enrollments || 0}{" "}
-                          enrolled
+                          <FaLink size={10} /> {insight.clicks || 0} clicks
                         </span>
                       </div>
                     </div>
-                    <ApprovalBadge approved={course.approved} />
+                    <ApprovalBadge approved={insight.approved} />
                   </div>
                 ))}
-                {popularCourses.length === 0 && (
+                {popularInsights.length === 0 && (
                   <p className="text-center text-gray-500 py-4">
-                    No courses yet
+                    No insights yet
                   </p>
                 )}
               </div>
-            </div> */}
+            </div>
 
-            {/* Top Leaders */}
+            {/* Top Organizations */}
             <div className="bg-white p-4 rounded-xl shadow-sm border">
               <h3 className="text-lg font-semibold mb-4">
-                🏆 Top Content Leaders
+                🏆 Top Contributing Organizations
               </h3>
               <div className="space-y-3">
-                {topLeaders.map((leader, index) => (
+                {topOrganizations.map((org, index) => (
                   <div
-                    key={leader.email}
+                    key={org.name}
                     className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg"
                   >
                     <div
                       className="w-8 h-8 flex items-center justify-center font-bold text-lg"
-                      style={{ color: COLORS[index] }}
+                      style={{ color: COLORS[index % COLORS.length] }}
                     >
                       #{index + 1}
                     </div>
@@ -880,35 +993,32 @@ const AdminCourses = () => {
                         className="text-lg font-semibold"
                         style={{ color: "#146C94" }}
                       >
-                        {leader.name?.charAt(0).toUpperCase()}
+                        {org.name?.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-sm">{leader.name}</h4>
+                      <h4 className="font-medium text-sm">{org.name}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
-                        <span>{leader.courseCount} courses</span>
+                        <span>{org.insightCount} insights</span>
                         <span>•</span>
-                        {/* <span className="flex items-center gap-1">
-                          <FaEye size={10} /> {leader.totalViews} views
+                        <span className="flex items-center gap-1">
+                          <FaEye size={10} /> {org.totalViews} views
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1 text-green-600">
-                          <FaUserGraduate size={10} /> {leader.totalEnrollments}{" "}
-                          enrolled
-                        </span> */}
+                          <FaLink size={10} /> {org.totalClicks} clicks
+                        </span>
                       </div>
                     </div>
                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                      {Math.round(
-                        (leader.approvedCount / leader.courseCount) * 100,
-                      )}
+                      {Math.round((org.approvedCount / org.insightCount) * 100)}
                       % approved
                     </span>
                   </div>
                 ))}
-                {topLeaders.length === 0 && (
+                {topOrganizations.length === 0 && (
                   <p className="text-center text-gray-500 py-4">
-                    No leaders yet
+                    No organizations yet
                   </p>
                 )}
               </div>
@@ -923,7 +1033,7 @@ const AdminCourses = () => {
                   <AiOutlineSearch className="text-lg mr-2 text-gray-500" />
                   <input
                     type="text"
-                    placeholder="Search courses by title, description, organization, or contact email..."
+                    placeholder="Search insights by title, summary, methodology, or tags..."
                     className="bg-transparent outline-none w-full"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -941,14 +1051,14 @@ const AdminCourses = () => {
               {showFilters && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
                   <select
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    value={organizationFilter}
+                    onChange={(e) => setOrganizationFilter(e.target.value)}
                     className="border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none bg-white"
                   >
-                    <option value="all">All Categories</option>
-                    {availableCategories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
+                    <option value="all">All Organizations</option>
+                    {availableOrganizations.map((org) => (
+                      <option key={org} value={org}>
+                        {org}
                       </option>
                     ))}
                   </select>
@@ -987,7 +1097,7 @@ const AdminCourses = () => {
               )}
 
               {(searchText ||
-                categoryFilter !== "all" ||
+                organizationFilter !== "all" ||
                 approvalFilter !== "all" ||
                 dateRange.start ||
                 dateRange.end) && (
@@ -1001,9 +1111,9 @@ const AdminCourses = () => {
                         Search: {searchText}
                       </span>
                     )}
-                    {categoryFilter !== "all" && (
+                    {organizationFilter !== "all" && (
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                        Category: {categoryFilter}
+                        Org: {organizationFilter}
                       </span>
                     )}
                     {approvalFilter !== "all" && (
@@ -1027,31 +1137,34 @@ const AdminCourses = () => {
           {/* Results Count */}
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-lg font-semibold">
-              Showing {sortedCourses.length} of {stats.total} courses
+              Showing {sortedInsights.length} of {stats.total} insights
             </h3>
           </div>
 
-          {/* Courses Table/Grid */}
+          {/* Insights Table/Grid */}
           {loading ? (
             <div className="flex justify-center items-center h-[40vh]">
-              <Spinner message="Fetching courses..." />
+              <Spinner message="Fetching insights..." />
             </div>
           ) : (
             <>
               {/* Mobile View */}
               <div className="md:hidden">
-                {paginatedCourses.length > 0 ? (
-                  paginatedCourses.map((course) => (
-                    <CourseCard
-                      key={course._id}
-                      course={course}
-                      onView={(course) => setViewModal({ show: true, course })}
+                {paginatedInsights.length > 0 ? (
+                  paginatedInsights.map((insight) => (
+                    <InsightCard
+                      key={insight._id}
+                      insight={insight}
+                      onView={(insight) =>
+                        setViewModal({ show: true, insight })
+                      }
                       onEdit={handleOpenForm}
-                      onDelete={(course) =>
-                        setDeleteModal({ show: true, course })
+                      onDelete={(insight) =>
+                        setDeleteModal({ show: true, insight })
                       }
                       onToggleApproval={handleToggleApproval}
-                      loadingApproval={loadingApproval}
+                      onToggleFeatured={handleToggleFeatured}
+                      loadingApproval={loadingApproval || loadingFeatured}
                     />
                   ))
                 ) : (
@@ -1060,23 +1173,24 @@ const AdminCourses = () => {
                       size={48}
                       className="mx-auto text-gray-400 mb-3"
                     />
-                    <p className="text-gray-600">No courses found</p>
+                    <p className="text-gray-600">No insights found</p>
                   </div>
                 )}
               </div>
 
               {/* Desktop View */}
               <div className="hidden md:block overflow-x-auto bg-white rounded-xl shadow-sm border">
-                {paginatedCourses.length > 0 ? (
-                  <CoursesTable
-                    data={paginatedCourses}
-                    onView={(course) => setViewModal({ show: true, course })} // Make sure this is correct
+                {paginatedInsights.length > 0 ? (
+                  <InsightsTable
+                    data={paginatedInsights}
+                    onView={(insight) => setViewModal({ show: true, insight })}
                     onEdit={handleOpenForm}
-                    onDelete={(course) =>
-                      setDeleteModal({ show: true, course })
-                    } // Make sure this is correct
+                    onDelete={(insight) =>
+                      setDeleteModal({ show: true, insight })
+                    }
                     onToggleApproval={handleToggleApproval}
-                    loadingApproval={loadingApproval}
+                    onToggleFeatured={handleToggleFeatured}
+                    loadingApproval={loadingApproval || loadingFeatured}
                   />
                 ) : (
                   <div className="text-center py-12">
@@ -1084,7 +1198,7 @@ const AdminCourses = () => {
                       size={48}
                       className="mx-auto text-gray-400 mb-3"
                     />
-                    <p className="text-gray-600">No courses found</p>
+                    <p className="text-gray-600">No insights found</p>
                   </div>
                 )}
               </div>
@@ -1115,7 +1229,7 @@ const AdminCourses = () => {
           )}
 
           {/* View Modal */}
-          {viewModal.show && viewModal.course && (
+          {viewModal.show && viewModal.insight && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
                 <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
@@ -1123,36 +1237,43 @@ const AdminCourses = () => {
                     className="text-xl font-bold"
                     style={{ color: "#146C94" }}
                   >
-                    Course Details
+                    Insight Details
                   </h2>
                   <button
-                    onClick={() => setViewModal({ show: false, course: null })}
+                    onClick={() => setViewModal({ show: false, insight: null })}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     <AiOutlineClose size={24} />
                   </button>
                 </div>
 
-                {viewModal.course.image && (
+                {viewModal.insight.image && (
                   <div className="relative h-64 bg-gray-100">
                     <img
-                      src={viewModal.course.image}
-                      alt={viewModal.course.title}
+                      src={viewModal.insight.image}
+                      alt={viewModal.insight.title}
                       className="w-full h-full object-contain"
                     />
                     <div className="absolute top-4 right-4">
-                      <ApprovalBadge approved={viewModal.course.approved} />
+                      <ApprovalBadge approved={viewModal.insight.approved} />
                     </div>
                   </div>
                 )}
 
                 <div className="p-6">
-                  <h2
-                    className="text-2xl font-bold mb-3"
-                    style={{ color: "#0067b8" }}
-                  >
-                    {viewModal.course.title}
-                  </h2>
+                  <div className="flex justify-between items-start mb-3">
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{ color: "#0067b8" }}
+                    >
+                      {viewModal.insight.title}
+                    </h2>
+                    {viewModal.insight.isFeatured && (
+                      <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm flex items-center gap-1">
+                        ⭐ Featured
+                      </span>
+                    )}
+                  </div>
 
                   <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-2">
@@ -1160,56 +1281,51 @@ const AdminCourses = () => {
                       <div>
                         <p className="text-xs text-gray-500">Organization</p>
                         <p className="font-medium">
-                          {viewModal.course.organization}
+                          {viewModal.insight.organizationName}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MdOutlineCategory className="text-gray-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Category</p>
-                        <p className="font-medium">
-                          {viewModal.course.category}
-                        </p>
-                      </div>
-                    </div>
-                    {viewModal.course.tag && (
-                      <div className="flex items-center gap-2">
-                        <HiOutlineTag className="text-gray-500" />
-                        <div>
-                          <p className="text-xs text-gray-500">Tag</p>
-                          <p className="font-medium">#{viewModal.course.tag}</p>
-                        </div>
-                      </div>
-                    )}
                     <div className="flex items-center gap-2">
                       <FaRegCalendarAlt className="text-gray-500" />
                       <div>
-                        <p className="text-xs text-gray-500">Created</p>
+                        <p className="text-xs text-gray-500">Date of Insight</p>
                         <p className="font-medium">
-                          {moment(viewModal.course.createdAt).format(
+                          {moment(viewModal.insight.dateOfInsight).format(
                             "MMM DD, YYYY",
                           )}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MdOutlineEmail className="text-gray-500" />
+                      <HiOutlineTag className="text-gray-500" />
                       <div>
-                        <p className="text-xs text-gray-500">Contact Email</p>
-                        <p className="font-medium">{viewModal.course.email}</p>
+                        <p className="text-xs text-gray-500">Tags</p>
+                        <p className="font-medium">
+                          {viewModal.insight.tags?.join(", ") || "No tags"}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <FaRegCalendarAlt className="text-gray-500" />
+                      <div>
+                        <p className="text-xs text-gray-500">Created</p>
+                        <p className="font-medium">
+                          {moment(viewModal.insight.createdAt).format(
+                            "MMM DD, YYYY",
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 col-span-2">
                       <IoPeopleOutline className="text-gray-500" />
                       <div>
                         <p className="text-xs text-gray-500">Created By</p>
                         <p className="font-medium">
-                          {viewModal.course.createdBy?.organizationName ||
+                          {viewModal.insight.createdBy?.organizationName ||
                             "Unknown"}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {viewModal.course.createdBy?.email}
+                          {viewModal.insight.createdBy?.email}
                         </p>
                       </div>
                     </div>
@@ -1217,22 +1333,29 @@ const AdminCourses = () => {
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-semibold mb-2">Description</h3>
+                      <h3 className="font-semibold mb-2">Summary</h3>
                       <p className="text-gray-700 whitespace-pre-wrap">
-                        {viewModal.course.desc}
+                        {viewModal.insight.insightSummary}
                       </p>
                     </div>
 
                     <div>
-                      <h3 className="font-semibold mb-2">Course Link</h3>
+                      <h3 className="font-semibold mb-2">Methodology</h3>
+                      <p className="text-gray-700 whitespace-pre-wrap">
+                        {viewModal.insight.methodologyInBrief}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2">Full Report</h3>
                       <a
-                        href={viewModal.course.link}
+                        href={viewModal.insight.linkToFullReport}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-blue-600 hover:underline break-all"
                       >
                         <MdOutlineLink />
-                        {viewModal.course.link}
+                        {viewModal.insight.linkToFullReport}
                       </a>
                     </div>
 
@@ -1240,36 +1363,20 @@ const AdminCourses = () => {
                       <h3 className="font-semibold mb-3">
                         Engagement Analytics
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="bg-blue-50 p-3 rounded-lg text-center">
                           <p className="text-sm text-gray-600">Total Views</p>
                           <p
                             className="text-2xl font-bold"
                             style={{ color: "#146C94" }}
                           >
-                            {viewModal.course.views || 0}
+                            {viewModal.insight.views || 0}
                           </p>
                         </div>
                         <div className="bg-green-50 p-3 rounded-lg text-center">
-                          <p className="text-sm text-gray-600">Enrollments</p>
+                          <p className="text-sm text-gray-600">Link Clicks</p>
                           <p className="text-2xl font-bold text-green-600">
-                            {viewModal.course.enrollments || 0}
-                          </p>
-                        </div>
-                        <div className="bg-purple-50 p-3 rounded-lg text-center">
-                          <p className="text-sm text-gray-600">
-                            Conversion Rate
-                          </p>
-                          <p className="text-2xl font-bold text-purple-600">
-                            {viewModal.course.views &&
-                            viewModal.course.enrollments
-                              ? Math.round(
-                                  (viewModal.course.enrollments /
-                                    viewModal.course.views) *
-                                    100,
-                                )
-                              : 0}
-                            %
+                            {viewModal.insight.clicks || 0}
                           </p>
                         </div>
                       </div>
@@ -1279,7 +1386,7 @@ const AdminCourses = () => {
                   <div className="flex justify-end mt-6">
                     <button
                       onClick={() =>
-                        setViewModal({ show: false, course: null })
+                        setViewModal({ show: false, insight: null })
                       }
                       className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
                     >
@@ -1296,29 +1403,34 @@ const AdminCourses = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto p-4">
               <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
-                  <button
-                    type="button"
-                    onClick={() => setFormModal({ show: false, course: null })}
-                    className="px-4 py-2 bg-[#E0A200] text-white rounded-lg hover:bg-gray-300 transition mb-6"
-                  >
-                    Close
-                  </button>
-
-                  <h2 className="text-xl font-bold mb-4">
-                    {formModal.course ? "Edit Course" : "Create New Course"}
-                  </h2>
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold mb-4">
+                      {formModal.insight
+                        ? "Edit Insight"
+                        : "Create New Insight"}
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormModal({ show: false, insight: null })
+                      }
+                      className="px-4 py-2 bg-[#E0A200] rounded-lg hover:bg-gray-300 transition"
+                    >
+                      Close
+                    </button>
+                  </div>
                   <form onSubmit={handleSubmitForm} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium mb-2">
-                        Course Image <span className="text-red-500">*</span>
+                        Image <span className="text-red-500">*</span>
                       </label>
                       <ImageUpload
                         onImageUpload={(url) =>
                           setFormData({ ...formData, image: url })
                         }
                         defaultImage={formData.image}
-                        folder="courses"
-                        buttonText="Upload Course Image"
+                        folder="insights"
+                        buttonText="Upload Insight Image"
                       />
                     </div>
 
@@ -1334,123 +1446,130 @@ const AdminCourses = () => {
                         }
                         required
                         className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
-                        placeholder="Enter course title"
+                        placeholder="Enter insight title"
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Description <span className="text-red-500">*</span>
+                        Organization <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.organizationName}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            organizationName: e.target.value,
+                          })
+                        }
+                        required
+                        className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
+                        placeholder="Organization name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Date of Insight <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.dateOfInsight}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            dateOfInsight: e.target.value,
+                          })
+                        }
+                        required
+                        className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Insight Summary <span className="text-red-500">*</span>
                       </label>
                       <textarea
-                        value={formData.desc}
+                        value={formData.insightSummary}
                         onChange={(e) =>
-                          setFormData({ ...formData, desc: e.target.value })
+                          setFormData({
+                            ...formData,
+                            insightSummary: e.target.value,
+                          })
                         }
                         required
                         rows="4"
                         className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
-                        placeholder="Describe your course..."
+                        placeholder="Summarize the key insight..."
                       />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Organization <span className="text-red-500">*</span>
-                        </label>
-
-                        <input
-                          type="text"
-                          value={formData.organization}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              organization: e.target.value,
-                            })
-                          }
-                          required
-                          className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
-                          placeholder="Your organization"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Category <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          value={formData.category}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              category: e.target.value,
-                            })
-                          }
-                          required
-                          className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none bg-white"
-                        >
-                          <option value="">Select a category</option>
-                          {CourseCategories.map((category) => (
-                            <option key={category} value={category}>
-                              {category}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Tag (Optional)
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.tag}
-                          onChange={(e) =>
-                            setFormData({ ...formData, tag: e.target.value })
-                          }
-                          className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
-                          placeholder="e.g., beginner, advanced"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Contact Email <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) =>
-                            setFormData({ ...formData, email: e.target.value })
-                          }
-                          className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
-                          placeholder="contact@example.com"
-                        />
-                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Course Link <span className="text-red-500">*</span>
+                        Methodology (Brief){" "}
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        value={formData.methodologyInBrief}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            methodologyInBrief: e.target.value,
+                          })
+                        }
+                        required
+                        rows="3"
+                        className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
+                        placeholder="Briefly describe how this insight was derived..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Link to Full Report{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="url"
-                        value={formData.link}
+                        value={formData.linkToFullReport}
                         onChange={(e) =>
-                          setFormData({ ...formData, link: e.target.value })
+                          setFormData({
+                            ...formData,
+                            linkToFullReport: e.target.value,
+                          })
                         }
                         required
                         className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
-                        placeholder="https://example.com/course"
+                        placeholder="https://example.com/full-report"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Tags (comma-separated)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.tags}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tags: e.target.value })
+                        }
+                        className="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-200 outline-none"
+                        placeholder="LLM, Computer Vision, NLP, MLOps, etc."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate tags with commas (e.g., "AI, Machine Learning,
+                        Ethics")
+                      </p>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">
                       <button
                         type="button"
                         onClick={() =>
-                          setFormModal({ show: false, course: null })
+                          setFormModal({ show: false, insight: null })
                         }
                         className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
                       >
@@ -1464,12 +1583,12 @@ const AdminCourses = () => {
                         {submitting ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            {formModal.course ? "Updating..." : "Creating..."}
+                            {formModal.insight ? "Updating..." : "Creating..."}
                           </>
-                        ) : formModal.course ? (
-                          "Update Course"
+                        ) : formModal.insight ? (
+                          "Update Insight"
                         ) : (
-                          "Create Course"
+                          "Create Insight"
                         )}
                       </button>
                     </div>
@@ -1480,7 +1599,7 @@ const AdminCourses = () => {
           )}
 
           {/* Delete Modal */}
-          {deleteModal.show && deleteModal.course && (
+          {deleteModal.show && deleteModal.insight && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
                 <div className="flex items-center justify-center mb-4">
@@ -1494,14 +1613,14 @@ const AdminCourses = () => {
                 <p className="text-gray-600 text-center mb-6">
                   Are you sure you want to delete{" "}
                   <span className="font-semibold">
-                    "{deleteModal.course.title}"
+                    "{deleteModal.insight.title}"
                   </span>
                   ? This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={() =>
-                      setDeleteModal({ show: false, course: null })
+                      setDeleteModal({ show: false, insight: null })
                     }
                     disabled={loadingAction}
                     className="flex-1 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition disabled:opacity-50"
@@ -1509,7 +1628,7 @@ const AdminCourses = () => {
                     Cancel
                   </button>
                   <button
-                    onClick={handleDeleteCourse}
+                    onClick={handleDeleteInsight}
                     disabled={loadingAction}
                     className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                   >
@@ -1532,4 +1651,4 @@ const AdminCourses = () => {
   );
 };
 
-export default AdminCourses;
+export default AdminInsights;

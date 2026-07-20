@@ -2,35 +2,131 @@ import { AiOutlineMail } from "react-icons/ai";
 import { MdOutlineLocalPhone } from "react-icons/md";
 import { FiMapPin } from "react-icons/fi";
 import { CiCalendar } from "react-icons/ci";
+import Logo from "../assets/kai2.png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="mt-8">
-      <div className="flex flex-col md:flex-row justify-between items-center text-center  gap-8  bg-[#0067b8] text-white py-10 px-[2em]  xl:px-[5em] ">
+    <div className="mt-8 bg-[#0A0A1F] text-white py-10 px-[2em]  xl:px-[5em] ">
+      {/* top part */}
+      <div className="flex flex-col md:flex-row justify-between items-center   gap-8  ">
+        {/* first column */}
         <div>
-          <p>© Copyright 2023 KEPSA | All rights reserved.</p>
+          <img
+            src={Logo}
+            alt="Logo"
+            className="h-18 mb-7 mx-auto md:mx-0 bg-white p-2 rounded-xl"
+          />
+          <p className="text-[#9A9AB0] sm:max-w-lg">
+            The Kenya Artificial Intelligence Skilling Alliance. Training and
+            certifying one million Kenyans, AI-ready by 2027.
+          </p>
         </div>
 
-        {/* contact information */}
+        {/* second column */}
         <div>
-          <h3 className="font-bold text-lg mb-4">Contact Us</h3>
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <AiOutlineMail className="text-lg" />
-            <a href="mailto:test@kaia.org">aiskillingalliance@kepsa.or.ke</a>
-          </div>
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <MdOutlineLocalPhone className="text-lg" />
-            <a href="tel:+254720340949">+254 720 340949</a>
-          </div>
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <FiMapPin className="text-lg" />
-            <p>Two Rivers Mall, South Tower, 7th Floor</p>
-          </div>
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <CiCalendar className="text-lg" />
-            <p>Mon - Fri: 9:00 AM - 5:00 PM</p>
+          <h2
+            className="text-[#9A9AB0] mb-6 "
+            style={{
+              fontFamily: "IBM Plex Mono, monospace",
+              letterSpacing: "0.12em",
+            }}
+          >
+            PROGRAMME
+          </h2>
+          <div>
+            <ul className="flex flex-col gap-4 items-center md:items-start">
+              <li>
+                <Link to="/learn">
+                  <p className="text-white cursor-pointer">Learn</p>
+                </Link>
+              </li>
+              <li>
+                <Link to="/jobs">
+                  <p className="text-white cursor-pointer">Jobs Board</p>
+                </Link>
+              </li>
+              <li>
+                <Link to="/membership">
+                  <p className="text-white cursor-pointer">Our Members</p>
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
+
+        {/* third column */}
+        <div>
+          <h2
+            className="text-[#9A9AB0] mb-6 "
+            style={{
+              fontFamily: "IBM Plex Mono, monospace",
+              letterSpacing: "0.12em",
+            }}
+          >
+            INSIGHTS
+          </h2>
+          <div>
+            <ul className="flex flex-col gap-4 items-center md:items-start">
+              <li>
+                <Link to="/news">
+                  <p className="text-white cursor-pointer">News</p>
+                </Link>
+              </li>
+              <li>
+                <Link to="/blogs">
+                  <p className="text-white cursor-pointer">Blogs</p>
+                </Link>
+              </li>
+              <li>
+                <Link to="/events">
+                  <p className="text-white cursor-pointer">Events</p>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* FOURTH column */}
+        <div>
+          <h2
+            className="text-[#9A9AB0] mb-6 "
+            style={{
+              fontFamily: "IBM Plex Mono, monospace",
+              letterSpacing: "0.12em",
+            }}
+          >
+            ALLIANCE
+          </h2>
+          <div>
+            <ul className="flex flex-col gap-4 items-center md:items-start">
+              <li>
+                <Link to="/about">
+                  <p className="text-white cursor-pointer">About KAISA</p>
+                </Link>
+              </li>
+              <li>
+                <Link to="/membership">
+                  <p className="text-white cursor-pointer">Become A Member</p>
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact">
+                  <p className="text-white cursor-pointer">Contact</p>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-[#2A2A3D] h-[1px] w-full my-[2em]" />
+
+      <div className=" ">
+        <p className="text-[#9A9AB0] text-[14px]">
+          © 2027 KAISA . A national alliance of government, industry, academia &
+          civil society.
+        </p>
       </div>
     </div>
   );

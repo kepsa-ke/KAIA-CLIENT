@@ -10,22 +10,40 @@ import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const Navlinks = [
-    { id: 1, title: "Home", goTo: "/" },
-    { id: 2, title: "Membership", goTo: "/membership" },
-    { id: 3, title: "Training Partners", goTo: "/training-partners" },
+    {
+      id: 6,
+      title: "About Us",
+      goTo: "#",
+      dropdown: [
+        { title: "About Alliance", goTo: "/about" },
+        { title: "Working Committees", goTo: "/about-committees" },
+        // { title: "Who can Join", goTo: "/who-can-join" },
+        // { title: "Our Guiding Principles", goTo: "/guiding-principles" },
+      ],
+    },
+    { id: 2, title: "Our Members", goTo: "/membership" },
+    {
+      id: 5,
+      title: "Solutions",
+      goTo: "#",
+      dropdown: [
+        { title: "Learn", goTo: "/learn" },
+        { title: "Browse Jobs", goTo: "/jobs" },
+        { title: "Create Job", goTo: "/membership", isDivider: true },
+      ],
+    },
     {
       id: 4,
-      title: "Resources",
+      title: "Impact",
       goTo: "#",
       dropdown: [
         { title: "News", goTo: "/news" },
-        { title: "Blogs", goTo: "/blogs" },
+        { title: "Blog", goTo: "/blogs" },
         { title: "Events", goTo: "/events" },
-        { title: "Jobs", goTo: "/jobs" },
+        { title: "Insights", goTo: "/insights" },
       ],
     },
-    { id: 5, title: "Contact Us", goTo: "/contact" },
-    { id: 6, title: "Login", goTo: "/login" },
+    { id: 8, title: "Login", goTo: "/login" },
   ];
 
   const [toggle, setToggle] = useState(false);
@@ -39,13 +57,28 @@ const Navbar = () => {
   const currentPath = pathname.replace(/^\/+/, "");
 
   useEffect(() => {
-    const activeLink = Navlinks.find(
+    let activeLink = Navlinks.find(
       (link) => link?.goTo.toLowerCase() === `/${currentPath.toLowerCase()}`,
     );
+
+    if (!activeLink) {
+      for (const link of Navlinks) {
+        if (link.dropdown) {
+          const found = link.dropdown.find(
+            (dropItem) =>
+              dropItem.goTo.toLowerCase() === `/${currentPath.toLowerCase()}`,
+          );
+          if (found) {
+            activeLink = { title: found.title };
+            break;
+          }
+        }
+      }
+    }
+
     setActive(activeLink ? activeLink.title : "");
   }, [currentPath]);
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (hoverTimeout) {
@@ -64,7 +97,7 @@ const Navbar = () => {
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
       setOpenDropdown(null);
-    }, 300); // 300ms delay before closing
+    }, 300);
     setHoverTimeout(timeout);
   };
 
@@ -75,12 +108,10 @@ const Navbar = () => {
     setOpenDropdown(id);
   };
 
-  // Handle dropdown toggle for desktop
   const handleDropdownToggle = (id) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
-  // Handle dropdown toggle for mobile
   const handleMobileDropdownToggle = (id) => {
     setMobileDropdownOpen((prev) => ({
       ...prev,
@@ -96,6 +127,7 @@ const Navbar = () => {
         style={{
           background: "rgba(247, 240, 240, 0.9)",
           backdropFilter: "blur(4px)",
+          fontFamily: "Space Grotesk, sans-serif",
         }}
       >
         <div className="flex justify-between items-center">
@@ -110,7 +142,7 @@ const Navbar = () => {
               {Navlinks?.map((item) => (
                 <li
                   key={item.id}
-                  className={`relative hover:text-[#0067b8] text-inherit no-underline cursor-pointer`}
+                  className={`relative hover:text-[#1B12E8] text-inherit no-underline cursor-pointer`}
                 >
                   {item.dropdown ? (
                     <div
@@ -120,8 +152,10 @@ const Navbar = () => {
                     >
                       <span
                         className={`${
-                          item.title === active
-                            ? "text-[#0067b8]"
+                          item.dropdown.some(
+                            (dropItem) => dropItem.title === active,
+                          )
+                            ? "text-[#1B12E8]"
                             : "text-inherit"
                         } cursor-default`}
                       >
@@ -138,26 +172,30 @@ const Navbar = () => {
                         )}
                       </button>
 
-                      {/* Dropdown menu */}
                       {openDropdown === item.id && (
                         <div
-                          className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50"
+                          className="absolute top-full left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-2 z-50"
                           onMouseEnter={() => handleDropdownMouseEnter(item.id)}
                           onMouseLeave={handleMouseLeave}
                         >
                           {item.dropdown.map((dropItem, index) => (
-                            <Link
-                              key={index}
-                              to={dropItem.goTo}
-                              className="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#0067b8]"
-                              onClick={() => {
-                                setActive(dropItem.title);
-                                setOpenDropdown(null);
-                                setToggle(false);
-                              }}
-                            >
-                              {dropItem.title}
-                            </Link>
+                            <div key={index}>
+                              {dropItem.isDivider && index > 0 && (
+                                <div className="border-t border-gray-200 my-1" />
+                              )}
+
+                              <Link
+                                to={dropItem.goTo}
+                                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#1B12E8]"
+                                onClick={() => {
+                                  setActive(dropItem.title);
+                                  setOpenDropdown(null);
+                                  setToggle(false);
+                                }}
+                              >
+                                {dropItem.title}
+                              </Link>
+                            </div>
                           ))}
                         </div>
                       )}
@@ -167,10 +205,10 @@ const Navbar = () => {
                       to={item.goTo}
                       onClick={() => setActive(item.title)}
                       className={`${
-                        item.title === active
-                          ? "text-[#0067b8]"
+                        item.title === active && item.title !== "Login"
+                          ? "text-[#1B12E8]"
                           : "text-inherit"
-                      }`}
+                      } ${item.title === "Login" ? "bg-[#1B12E8] text-white px-[22px] py-[11px] rounded-2xl" : ""} `}
                     >
                       {item.title}
                     </Link>
@@ -208,10 +246,12 @@ const Navbar = () => {
 
       {toggle && (
         <div
-          className="xl:hidden h-[100vh] top-0 left-0 w-full fixed px-[1em] z-20 overflow-y-auto"
+          className="xl:hidden top-0 left-0 w-full fixed px-[1em] z-20 overflow-y-auto"
           style={{
             background: "rgba(247, 240, 240, 0.9)",
             backdropFilter: "blur(3px)",
+            maxHeight: "100vh",
+            height: "100vh",
           }}
         >
           <div className="flex justify-between items-center pt-[10px]">
@@ -224,27 +264,28 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* mobile links */}
-          <div className="pt-[1em]">
+          <div className="pt-[1em] pb-[4em]">
             <ul className="flex flex-col my-[1em] gap-[10px] text-end">
               {Navlinks?.map((item) => (
                 <li key={item.id} className="border-b border-gray-400 pb-2">
                   {item.dropdown ? (
                     <div>
-                      <div className="flex justify-between items-center">
+                      <div
+                        className="flex justify-between items-center cursor-pointer"
+                        onClick={() => handleMobileDropdownToggle(item.id)}
+                      >
                         <span
                           className={`flex-1 text-left ${
-                            item.title === active
-                              ? "text-[#0067b8]"
+                            item.dropdown.some(
+                              (dropItem) => dropItem.title === active,
+                            )
+                              ? "text-[#1B12E8]"
                               : "text-inherit"
                           } cursor-default`}
                         >
                           {item.title}
                         </span>
-                        <button
-                          onClick={() => handleMobileDropdownToggle(item.id)}
-                          className="p-2 focus:outline-none"
-                        >
+                        <button className="p-2 focus:outline-none">
                           {mobileDropdownOpen[item.id] ? (
                             <AiOutlineUp className="text-sm" />
                           ) : (
@@ -253,14 +294,13 @@ const Navbar = () => {
                         </button>
                       </div>
 
-                      {/* Mobile dropdown menu */}
                       {mobileDropdownOpen[item.id] && (
                         <div className="mt-2 ml-4 space-y-2">
                           {item.dropdown.map((dropItem, index) => (
                             <Link
                               key={index}
                               to={dropItem.goTo}
-                              className="block py-2 text-left text-gray-600 hover:text-[#0067b8] border-b border-gray-300"
+                              className="block py-2 text-left text-gray-600 hover:text-[#1B12E8] border-b border-gray-300"
                               onClick={() => {
                                 setActive(dropItem.title);
                                 setToggle(false);
@@ -278,7 +318,7 @@ const Navbar = () => {
                       to={item.goTo}
                       className={`block w-full text-left ${
                         item.title === active
-                          ? "text-[#0067b8]"
+                          ? "text-[#1B12E8]"
                           : "text-inherit"
                       }`}
                       onClick={() => {

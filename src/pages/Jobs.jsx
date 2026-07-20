@@ -43,6 +43,7 @@ import { GrLocation } from "react-icons/gr";
 import moment from "moment";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // Work Mode Badge Component
 const WorkModeBadge = ({ mode }) => {
@@ -707,11 +708,11 @@ const Jobs = () => {
       <Navbar />
 
       {/* Header */}
-      <div className="bg-white shadow-sm mt-[3em] mb-[3em]">
+      <div className="bg-white shadow-sm mt-[3em] mb-[3em]  px-4 lg:px-18">
         <div className="container mx-auto px-4 py-8">
           <h1
             className="text-3xl md:text-4xl font-bold mb-2 mt-[1em]"
-            style={{ color: "#0067b8" }}
+            style={{ color: "#1B12E8" }}
           >
             Find Your Next Opportunity
           </h1>
@@ -728,7 +729,7 @@ const Jobs = () => {
           {/* Search Bar */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              <div className="flex items-center border-2 rounded-xl overflow-hidden focus-within:border-blue-400 transition">
+              <div className="flex items-center border-2 rounded-xl overflow-hidden focus-within:border-[#1B12E8] transition">
                 <AiOutlineSearch className="ml-4 text-gray-400" size={20} />
                 <input
                   type="text"
@@ -962,6 +963,8 @@ const Jobs = () => {
           />
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

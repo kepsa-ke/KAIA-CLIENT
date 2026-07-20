@@ -10,6 +10,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import moment from "moment";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 // Blog Modal Component
 const BlogModal = ({ ad, onClose, formatDate, handleAdClick }) => {
@@ -58,7 +59,7 @@ const BlogModal = ({ ad, onClose, formatDate, handleAdClick }) => {
           {/* Title */}
           <h2
             className="text-2xl md:text-3xl font-bold mb-3"
-            style={{ color: "#0067b8" }}
+            style={{ color: "#1B12E8" }}
           >
             {ad.title}
           </h2>
@@ -94,7 +95,7 @@ const BlogModal = ({ ad, onClose, formatDate, handleAdClick }) => {
             <BiCategory className="text-gray-500" />
             <span
               className="px-3 py-1 rounded-full text-sm"
-              style={{ backgroundColor: "#e6f0fa", color: "#0067b8" }}
+              style={{ backgroundColor: "#e6f0fa", color: "#1B12E8" }}
             >
               {ad.category}
             </span>
@@ -118,7 +119,7 @@ const BlogModal = ({ ad, onClose, formatDate, handleAdClick }) => {
           <button
             onClick={handleVisitBlog}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-white hover:opacity-90 transition text-lg font-medium"
-            style={{ backgroundColor: "#0067b8" }}
+            style={{ backgroundColor: "#1B12E8" }}
           >
             <FaExternalLinkAlt size={16} />
             Visit Blog
@@ -172,7 +173,7 @@ const BlogCard = ({ item, onClick, formatDate, getExcerpt }) => {
         {/* Title */}
         <h3
           className="text-lg font-semibold mb-2 line-clamp-2 text-gray-800"
-          style={{ color: "#0067b8" }}
+          style={{ color: "#1B12E8" }}
         >
           {item.title.length > 50
             ? `${item.title.substring(0, 50)}...`
@@ -193,7 +194,7 @@ const BlogCard = ({ item, onClick, formatDate, getExcerpt }) => {
         <div className="flex items-center justify-between mb-2">
           <span
             className="text-xs px-2 py-1 rounded-full"
-            style={{ backgroundColor: "#e6f0fa", color: "#0067b8" }}
+            style={{ backgroundColor: "#e6f0fa", color: "#1B12E8" }}
           >
             {item.category}
           </span>
@@ -396,7 +397,7 @@ const Blogs = () => {
           <div className="container mx-auto px-4 py-8">
             <h1
               className="text-3xl md:text-4xl font-bold mb-2 mt-[1em]"
-              style={{ color: "#0067b8" }}
+              style={{ color: "#1B12E8" }}
             >
               Blog Directory
             </h1>
@@ -592,7 +593,7 @@ const Blogs = () => {
                 <button
                   onClick={clearFilters}
                   className="mt-4 px-6 py-2 rounded-md text-white hover:opacity-90 transition"
-                  style={{ backgroundColor: "#0067b8" }}
+                  style={{ backgroundColor: "#1B12E8" }}
                 >
                   Clear Filters
                 </button>
@@ -613,6 +614,7 @@ const Blogs = () => {
           />
         )}
       </div>
+      <Footer />
     </div>
   );
 };
