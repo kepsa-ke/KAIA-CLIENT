@@ -27,6 +27,9 @@ import {
   AiOutlineEnvironment,
   AiOutlineDollarCircle,
 } from "react-icons/ai";
+import { FaBuilding } from "react-icons/fa";
+import { allCountiesKenya } from "../../data";
+import ImageUpload from "../../components/common/ImageUpload";
 
 const LeadersHome = () => {
   const { user } = useSelector((state) => state.auth);
@@ -38,6 +41,23 @@ const LeadersHome = () => {
     jobs: [],
     recentActivity: [],
   });
+
+  const [formModal, setFormModal] = useState({ show: false, member: null });
+  const [formData, setFormData] = useState({
+    firstName: "",
+    surName: "",
+    email: "",
+    organizationName: "",
+    website: "",
+    phone: "",
+    role: "",
+    category: "",
+    // New fields
+    companyLogo: "",
+    membershipType: "",
+    companyCounty: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -152,8 +172,27 @@ const LeadersHome = () => {
     }
   };
 
+  // fetch current member data on mount
+  const [yourMemberDetails, setYourMemberDetails] = useState(null);
+  const fetchCurrentMemberDetails = async () => {
+    if (!user || isTokenExpired(user?.token)) return;
+
+    try {
+      const token = user?.token;
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      const response = await axios.get(`/members/mine`, config);
+      setYourMemberDetails(response.data);
+    } catch (error) {
+      console.error("Error fetching current member data:", error);
+    }
+  };
+
   useEffect(() => {
     fetchAllData();
+    fetchCurrentMemberDetails();
   }, []);
 
   // Calculate stats - FIXED with safe array checks
@@ -248,6 +287,81 @@ const LeadersHome = () => {
     };
   };
 
+  // Handle form open
+  const handleOpenForm = (member = null) => {
+    if (member) {
+      setFormData({
+        firstName: member.firstName || "",
+        surName: member.surName || "",
+        email: member.email || "",
+        organizationName: member.organizationName || "",
+        website: member.website || "",
+        phone: member.phone || "",
+        role: member.role || "",
+        category: member.category || "",
+        // New fields
+        companyLogo: member.companyLogo || "",
+        membershipType: member.membershipType || "",
+        companyCounty: member.companyCounty || "",
+      });
+    } else {
+      setFormData({
+        firstName: "",
+        surName: "",
+        email: "",
+        organizationName: "",
+        website: "",
+        phone: "",
+        role: "",
+        category: "",
+        companyLogo: "",
+        membershipType: "",
+        companyCounty: "",
+      });
+    }
+    setFormModal({ show: true, member });
+  };
+
+  // Handle Create / Update
+  const handleSubmitForm = async (e) => {
+    e.preventDefault();
+    try {
+      // Validate required fields
+      if (!formData.companyLogo) {
+        toast.error("Please upload a company logo");
+        return;
+      }
+
+      setSubmitting(true);
+      const config = { headers: { Authorization: `Bearer ${user?.token}` } };
+      if (formModal.member) {
+        await axios.put(`/members/${formModal.member._id}`, formData, config);
+        toast.success("Member updated successfully");
+      } else {
+        // await axios.post("/members", formData, config);
+        // toast.success("Member created successfully");
+        console.log(
+          "Form submission is currently disabled for creating new members.",
+        );
+      }
+      setFormModal({ show: false, member: null });
+      fetchCurrentMemberDetails(); // Refresh member details after submission
+    } catch (err) {
+      toast.error("Error saving member");
+      console.log(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle logo upload
+  const handleLogoUpload = (imageUrl) => {
+    setFormData({
+      ...formData,
+      companyLogo: imageUrl,
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex h-screen">
@@ -283,7 +397,89 @@ const LeadersHome = () => {
             </div>
           </div>
         </div>
+        {/* member details */}
+        <div className="p-6 bg-white shadow-sm border border-gray-200 mb-8 mt-8">
+          <div className="flex items-center gap-5 mb-4 ">
+            <h2 className="text-xl font-bold text-gray-800 ">
+              Your Organization Details
+            </h2>
+          </div>
+          {yourMemberDetails &&
+            yourMemberDetails.map((member, index) => (
+              <div key={index}>
+                {/* compare logged in email with contact email */}
+                {user?.email === member?.email && (
+                  <div>
+                    {/* <p className="text-sm text-green-600 mb-2">
+                      You are the primary contact for this organization.
+                    </p> */}
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg cursor-pointer my-3"
+                      onClick={() => handleOpenForm(member)}
+                    >
+                      Edit Details
+                    </button>
+                  </div>
+                )}
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Organization Name</p>
+                    <p className="font-medium">{member?.organizationName}</p>
+
+                    <p className="text-sm text-gray-600 mt-6">Status</p>
+                    <p className="font-medium">
+                      {member?.approved ? "Approved" : "Not Approved"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Organization Logo</p>
+
+                    {/* Display the logo if it exists, otherwise show a placeholder */}
+                    {member?.companyLogo ? (
+                      <img
+                        src={member?.companyLogo}
+                        alt={`${member?.organizationName} Logo`}
+                        className="w-24 h-24 object-contain mt-2"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 rounded-xl flex items-center justify-center">
+                        <FaBuilding className="text-3xl text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-gray-600">Contact Email</p>
+                    <p className="font-medium">{member?.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Contact Phone</p>
+                    <p className="font-medium">{member?.phone}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Membership Type</p>
+                    <p className="font-medium">{member?.membershipType}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Website</p>
+                    <a
+                      href={member?.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      {member?.website}
+                    </a>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">County</p>
+                    <p className="font-medium">{member?.companyCounty}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
         {/* Stats Grid */}
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -643,7 +839,223 @@ const LeadersHome = () => {
             </div>
           </div>
         </div>
+
+        {/* {console.log(user)} */}
+        {/* {console.log(yourMemberDetails)} */}
       </main>
+
+      {/* Create/Update Form Modal - Updated with ImageUpload */}
+      {formModal.show && (
+        <div className="fixed inset-0 bg-black opacity-95 flex items-center justify-center z-50 overflow-auto">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold mb-4">
+                {formModal.member ? "Update Details" : "Add New Member"}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setFormModal({ show: false, member: null })}
+                className="px-4 py-2 bg-orange-300 rounded-md cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+            <form onSubmit={handleSubmitForm} className="space-y-3">
+              {/* Company Logo Upload */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Company Logo <span className="text-red-500">*</span>
+                </label>
+                <ImageUpload
+                  onImageUpload={handleLogoUpload}
+                  defaultImage={formData.companyLogo || ""}
+                  folder="member-logos"
+                  buttonText="Upload Company Logo"
+                  acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
+                  maxSize={5}
+                  id="admin-company-logo-upload"
+                />
+                {formData.companyLogo && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✓ Logo uploaded successfully
+                  </p>
+                )}
+              </div>
+
+              {[
+                {
+                  name: "organizationName",
+                  label: "Organization Name",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "website",
+                  label: "Website Link or LinkedIn",
+                  type: "url",
+                  required: true,
+                },
+                {
+                  name: "firstName",
+                  label: "First Name of the contact person",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "surName",
+                  label: "Surname of the contact person",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "role",
+                  label: "Role of the contact person",
+                  type: "text",
+                  required: true,
+                },
+                {
+                  name: "email",
+                  label: "Email of the contact person",
+                  type: "email",
+                  required: true,
+                },
+                {
+                  name: "phone",
+                  label: "Phone of the contact person",
+                  type: "tel",
+                  required: true,
+                },
+              ].map((field) => (
+                <div key={field.name}>
+                  <label className="block text-sm font-medium mb-1">
+                    {field.label}
+                    {field.required && (
+                      <span className="text-red-500 ml-1">*</span>
+                    )}
+                  </label>
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    value={formData[field.name] || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                    required={field.required || false}
+                    placeholder={field.placeholder || ""}
+                    className="w-full border px-3 py-2 rounded-md focus:ring focus:ring-blue-200 outline-none"
+                  />
+                </div>
+              ))}
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Select Membership Category{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="category"
+                  value={formData.category || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      category: e.target.value,
+                    })
+                  }
+                  required
+                  className="w-full border px-3 py-2 rounded-md focus:ring focus:ring-blue-200 outline-none bg-white"
+                >
+                  <option value="">Select a category</option>
+                  <option value="consumer">AI Consumer</option>
+                  <option value="trainer">AI Trainer</option>
+                  <option value="partner">AI Partner</option>
+                </select>
+              </div>
+
+              {/* Membership Type */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Membership Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="membershipType"
+                  value={formData.membershipType || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      membershipType: e.target.value,
+                    })
+                  }
+                  required
+                  className="w-full border px-3 py-2 rounded-md focus:ring focus:ring-blue-200 outline-none bg-white"
+                >
+                  <option value="">Select Membership Type</option>
+                  <option value="government">Government</option>
+                  <option value="academia">
+                    Academia/Training institutions
+                  </option>
+                  <option value="developmentPartners">
+                    Development partners
+                  </option>
+                  <option value="civilSociety">Civil society</option>
+                  <option value="innovationHubs">Innovation hubs</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              {/* Company County */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Company County <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="companyCounty"
+                  value={formData.companyCounty || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      companyCounty: e.target.value,
+                    })
+                  }
+                  required
+                  className="w-full border px-3 py-2 rounded-md focus:ring focus:ring-blue-200 outline-none bg-white"
+                >
+                  <option value="">Select County</option>
+                  {allCountiesKenya.map((county) => (
+                    <option key={county} value={county}>
+                      {county}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setFormModal({ show: false, member: null })}
+                  className="px-4 py-2 bg-gray-300 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-[#146C94] text-white rounded-md hover:bg-[#0d5675] disabled:opacity-50"
+                >
+                  {submitting
+                    ? "Saving..."
+                    : formModal.member
+                      ? "Update Details"
+                      : "Create Member"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

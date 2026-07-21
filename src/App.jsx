@@ -44,6 +44,7 @@ import AdminInsights from "./pages/adminpages/AdminInsights";
 import Insights from "./pages/Insights";
 import ConsolidatedAboutPage from "./pages/ConsolidatedAboutPage";
 import KAISACommitteesPage from "./pages/aboutUs/KAISACommiteesPage";
+import LeadersUsers from "./pages/leaderspages/LeadersUsers";
 
 function App() {
   return (
@@ -89,6 +90,7 @@ function App() {
 
           {/* leaders pages */}
           <Route path="/leaders-home" element={<LeadersHome />} />
+          <Route path="/leaders-users" element={<LeadersUsers />} />
           <Route path="/leaders-stats" element={<LeadersStatistics />} />
           <Route path="/leaders-news" element={<LeadersNews />} />
           <Route path="/leaders-blogs" element={<LeadersBlogs />} />

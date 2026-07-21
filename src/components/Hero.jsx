@@ -1,7 +1,7 @@
 import Bg1 from "../assets/bg3.mp4";
 import Mic from "../assets/microsoft.png";
 import Kepsa from "../assets/newKepsa.png";
-import ILO from "../assets/ilo.png";
+import ILO from "../assets/newILO.png";
 import Gov from "../assets/gov1.png";
 import { Link } from "react-router-dom";
 
@@ -73,7 +73,7 @@ const Hero = () => {
           >
             In partnership with
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-10">
+          <div className=" bg-white rounded-xl p-2 flex flex-wrap items-center justify-center gap-4 sm:gap-10">
             <Link to="https://gok.kenya.go.ke/" target="_blank">
               <img
                 src={Gov}

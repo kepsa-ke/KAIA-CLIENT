@@ -133,6 +133,13 @@ const AdminNavbar = () => {
         },
 
         {
+          id: 2,
+          title: "Users",
+          goTo: "/leaders-users",
+          icon: AiOutlineUser,
+        },
+
+        {
           id: 3,
           title: "News",
           goTo: "/leaders-news",
@@ -308,6 +315,12 @@ const AdminNavbar = () => {
 
           {/* Logout Button */}
           <div className="p-3 border-t border-gray-200">
+            <a
+              href="tel:+254 700 352909"
+              className="text-blue-600 hover:underline "
+            >
+              Report Issue <br /> (+254 700 352909)
+            </a>
             <button
               onClick={handleLogout}
               className={`

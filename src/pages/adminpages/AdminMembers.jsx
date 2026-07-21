@@ -812,11 +812,20 @@ const AdminMembers = () => {
 
           {/* Create/Update Form Modal - Updated with ImageUpload */}
           {formModal.show && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 overflow-auto">
+            <div className="fixed inset-0 bg-black opacity-95 flex items-center justify-center z-50 overflow-auto">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg max-h-[90vh] overflow-y-auto">
-                <h2 className="text-lg font-semibold mb-4">
-                  {formModal.member ? "Update Member" : "Add New Member"}
-                </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold mb-4">
+                    {formModal.member ? "Update Member" : "Add New Member"}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setFormModal({ show: false, member: null })}
+                    className="px-4 py-2 bg-orange-300 rounded-md cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
                 <form onSubmit={handleSubmitForm} className="space-y-3">
                   {/* Company Logo Upload */}
                   <div>
