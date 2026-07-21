@@ -284,7 +284,7 @@ const ShareModal = ({ insight, onClose }) => {
   );
 };
 
-// Insight Details Modal
+// Insight Details Modal --  here
 const InsightDetailsModal = ({ insight, onClose, onShare }) => {
   const [imageError, setImageError] = useState(false);
 
