@@ -1,6 +1,6 @@
 import Bg1 from "../assets/bg3.mp4";
 import Mic from "../assets/microsoft.png";
-import Kepsa from "../assets/Kpsa.png";
+import Kepsa from "../assets/newKepsa.png";
 import ILO from "../assets/ilo.png";
 import Gov from "../assets/gov1.png";
 import { Link } from "react-router-dom";
