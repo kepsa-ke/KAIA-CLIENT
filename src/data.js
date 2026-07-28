@@ -40,6 +40,7 @@ export const allCountiesKenya = [
   "Makueni",
   "Nyandarua",
   "Nyeri",
+  "Nairobi",
   "Kirinyaga",
   "Murang'a",
   "Kiambu",
